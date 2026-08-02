@@ -2,8 +2,7 @@
 // The trail weaves the FULL width: each biome's node sits at an alternating
 // extreme (left 18% / right 82%), seams meet at centre (x=50) so the path stays
 // continuous, and each card sits on the side OPPOSITE its ball.
-const RESUME = 'https://docs.google.com/document/d/1g7fsLNnx55Yc5uGAxTwSjeNRz7kBwrW4/edit?usp=sharing';
-const GITHUB = 'https://github.com/ramaniarun2003';
+import { RESUME_URL, GITHUB_URL, EMAIL } from './site';
 
 export const biomes = [
   {
@@ -23,8 +22,8 @@ export const biomes = [
         'Madison, Wisconsin — a CS + EE double major who kept ending up where software meets the machine: schedulers, sockets, signal paths. Correctness under the hood, care on the surface.',
       tags: ['UW–Madison', 'Computer Science', 'Electrical Engineering'],
       links: [
-        { href: RESUME, label: 'Résumé' },
-        { href: GITHUB, label: 'GitHub' },
+        { href: RESUME_URL, label: 'Résumé' },
+        { href: GITHUB_URL, label: 'GitHub' },
       ],
     },
   },
@@ -88,7 +87,7 @@ export const biomes = [
       description:
         "The route runs off into the water here. Interested in collaborating, or hiring? Send a message and let's talk.",
       links: [
-        { href: 'mailto:ramaniarun2003@gmail.com', label: 'Email me', primary: true },
+        { href: `mailto:${EMAIL}`, label: 'Email me', primary: true },
       ],
     },
   },

@@ -1,3 +1,5 @@
+import { EMAIL, GITHUB_URL } from '../data/site';
+
 export default function Contact() {
   return (
     <section id="contact" className="section contact">
@@ -8,8 +10,8 @@ export default function Contact() {
           Interested in collaborating, or hiring? Send a message and let's talk.
         </p>
         <div className="hero__cta">
-          <a className="btn btn--primary" href="mailto:ramaniarun2003@gmail.com">Email me</a>
-          <a className="btn btn--ghost" href="https://github.com/ramaniarun2003" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a className="btn btn--primary" href={`mailto:${EMAIL}`}>Email me</a>
+          <a className="btn btn--ghost" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
     </section>
