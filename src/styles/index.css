@@ -143,8 +143,8 @@ a{ color:inherit; }
    ===================================================================== */
 .route-trail{
   position:relative;
-  --ball:92px; --cw:430px; --bh:780px;
-  --ballX:22%; --cardX:calc(22% + 88px);
+  --ball:96px; --bh:780px;
+  --ballX:50%;
   --cy:50%; --cty:-34%;
 }
 
@@ -163,21 +163,75 @@ a{ color:inherit; }
 
 .rt-flow{ display:contents; }
 
+/* region label — on the ball's side, up top */
 .rt-label{
-  position:absolute; top:26px; left:var(--cardX); z-index:5;
+  position:absolute; top:26px; z-index:5;
   display:inline-flex; align-items:center; gap:9px; padding:7px 14px; border-radius:999px;
   background:rgba(255,255,255,.85); border:1px solid rgba(12,39,64,.10);
   font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#35506A;
 }
+.rt-band--left  .rt-label{ left:6%; right:auto; }
+.rt-band--right .rt-label{ right:6%; left:auto; }
 
-.rt-ball{ position:absolute; left:var(--ballX); top:50%; transform:translate(-50%,-50%); z-index:7; }
+/* the ball rides the weave at this biome's node */
+.rt-ball{
+  position:absolute; left:var(--ballX); top:50%; transform:translate(-50%,-50%); z-index:7;
+  appearance:none; border:0; background:transparent; padding:16px; cursor:pointer; border-radius:999px;
+}
 
+/* ---------- 3D opening sphere ---------- */
+.rt-ball__sphere{
+  position:relative; display:block; width:var(--ball); height:var(--ball);
+  perspective:640px; transform-style:preserve-3d;
+  animation:bob var(--bob,6s) ease-in-out infinite;
+}
+.rt-ball__shadow{ position:absolute; left:8%; bottom:-14%; width:84%; height:16%; border-radius:50%; background:rgba(12,39,64,.20); filter:blur(6px); }
+.rt-ball__glow{
+  position:absolute; inset:-34%; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,246,220,.95) 0%, rgba(255,214,140,.5) 42%, rgba(255,214,140,0) 70%);
+  opacity:var(--f,0); transform:translateZ(-6px) scale(calc(.4 + var(--f,0) * 1.05));
+  transition:opacity .45s ease-out, transform .45s ease-out;
+}
+/* shadowed inner cavity — revealed as the top hinges away */
+.rt-ball__cavity{
+  position:absolute; inset:7%; border-radius:50%;
+  background:radial-gradient(circle at 50% 32%, #55433a 0%, #2a1f1a 58%, #160f0c 100%);
+  box-shadow:inset 0 6px 12px rgba(0,0,0,.5);
+  transform:translateZ(-10px) scale(calc(.72 + var(--o,0) * .28)); opacity:var(--o,0);
+  transition:opacity .5s ease, transform .5s ease;
+}
+.rt-ball__cavity::after{ content:""; position:absolute; left:24%; top:16%; width:34%; height:22%; border-radius:50%; background:rgba(255,240,210,.16); filter:blur(2px); }
+/* bottom hemisphere stays, tilts slightly forward to show its cup rim */
+.rt-ball__bottom{
+  position:absolute; left:0; bottom:0; width:100%; height:50%; border-radius:0 0 999px 999px;
+  background:linear-gradient(20deg,#E6E1D7 0%, #FDFDFB 60%); box-shadow:inset 0 -3px 6px rgba(0,0,0,.05);
+  transform-origin:50% 0%; transform:rotateX(calc(var(--o,0) * 12deg)); transition:transform .6s cubic-bezier(.32,1.1,.34,1);
+}
+.rt-ball__bottom::before{ content:""; position:absolute; left:7%; right:7%; top:0; height:30%; border-radius:50%; background:linear-gradient(180deg, rgba(90,64,48,.4), rgba(90,64,48,0)); opacity:var(--o,0); transition:opacity .5s ease; }
+.rt-ball__band{ position:absolute; left:0; top:calc(50% - 5%); width:100%; height:10%; background:#2A2F36; border-radius:2px; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__btn{ position:absolute; z-index:2; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; background:#FDFDFB; border:3px solid #2A2F36; box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__pulse{ position:absolute; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; border:2px solid #E24B4A; box-sizing:border-box; opacity:calc(1 - var(--o,0)); animation:pulse 2.8s ease-out infinite; }
+/* top hemisphere — hinged at the back rim, tilts up & back in 3D */
+.rt-ball__top{
+  position:absolute; left:0; top:0; width:100%; height:50%; transform-style:preserve-3d;
+  transform-origin:50% 100%; transform:rotateX(calc(var(--o,0) * -134deg));
+  transition:transform .62s cubic-bezier(.32,1.1,.34,1);
+}
+.rt-ball__face{ position:absolute; inset:0; border-radius:999px 999px 0 0; backface-visibility:hidden; }
+.rt-ball__face--out{ background:linear-gradient(160deg,#F0827F 0%, #E24B4A 62%); box-shadow:inset 0 2px 6px rgba(255,255,255,.45); }
+.rt-ball__face--in{ background:radial-gradient(circle at 50% 92%, #4a382f 0%, #22160f 72%); transform:rotateX(180deg); }
+/* burst of light at the opening */
+.rt-ball__seam{ position:absolute; z-index:3; left:12%; right:12%; top:46%; height:12%; border-radius:50%; pointer-events:none; background:radial-gradient(ellipse at center, rgba(255,252,235,.95), rgba(255,214,140,0) 72%); opacity:var(--f,0); filter:blur(1px); transition:opacity .4s ease; }
+
+/* card — folds out on the side OPPOSITE the ball */
 .rt-card{
-  position:absolute; left:var(--cardX); top:var(--cy); width:var(--cw); z-index:8;
+  position:absolute; top:var(--cy); width:min(430px,46%); z-index:8;
   visibility:var(--vis,hidden); opacity:var(--o,0); transform-origin:50% 0%;
   transform:translate(0,var(--cty)) perspective(1000px) rotateX(calc((1 - var(--o,0)) * -74deg)) scale(calc(.97 + var(--o,0) * .03));
   transition:opacity .34s ease-out, transform .58s cubic-bezier(.26,1.12,.34,1), visibility .34s;
 }
+.rt-band--left  .rt-card{ left:40%; right:auto; }
+.rt-band--right .rt-card{ right:40%; left:auto; }
 .rt-card__panel{
   background:var(--cream); border:1px solid rgba(12,39,64,.10); border-radius:20px;
   box-shadow:0 26px 50px -22px rgba(12,39,64,.38); padding:26px 28px 24px;
@@ -190,16 +244,19 @@ a{ color:inherit; }
    PROJECTS — mobile: single-column, card folds open in flow (no clipping)
    ===================================================================== */
 @media (max-width:767px){
-  .route-trail{ --ball:60px; --cw:100%; }
+  .route-trail{ --ball:62px; }
   .rt-band{ height:auto; min-height:0; overflow:visible; }
   .rt-flow{
-    display:flex; flex-direction:column; align-items:center; gap:16px;
-    position:relative; z-index:6; padding:70px 7% 44px;
+    display:flex; flex-direction:column; align-items:stretch; gap:16px;
+    position:relative; z-index:6; padding:66px 7% 44px;
   }
-  .rt-label{ position:static; }
+  .rt-label{ position:static; align-self:center; }
+  /* ball still swings left/right within the column to sit on the serpentine */
   .rt-ball{ position:static; transform:none; }
+  .rt-band--left  .rt-ball{ align-self:flex-start; margin-left:8%; }
+  .rt-band--right .rt-ball{ align-self:flex-end; margin-right:8%; }
   .rt-card{
-    position:static; width:100%; visibility:visible; transform:none;
+    position:static; width:100%; left:auto; right:auto; visibility:visible; transform:none;
     display:grid; grid-template-rows:0fr; opacity:0;
     transition:grid-template-rows .42s ease, opacity .3s ease;
   }
@@ -213,9 +270,15 @@ a{ color:inherit; }
 .about{ background:var(--cream); }
 .about__text{ text-align:center; max-width:720px; margin:0 auto 1.2rem; font-size:1.1rem; color:var(--body); }
 .about__text strong{ color:var(--heading); }
-.about-badges{ display:flex; justify-content:center; flex-wrap:wrap; gap:1.4rem; margin-top:2.4rem; }
-.about-badge{ height:46px; width:auto; opacity:.9; transition:transform .25s ease, opacity .25s ease; }
-.about-badge:hover{ transform:translateY(-4px) scale(1.06); opacity:1; }
+.toolkit{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:20px 24px; margin-top:2.2rem; }
+.toolkit__icon{ height:40px; width:40px; object-fit:contain; opacity:.92; transition:transform .25s ease, opacity .25s ease; }
+.toolkit__icon:hover{ transform:translateY(-4px) scale(1.08); opacity:1; }
+.toolkit__pills{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px; margin-top:1.5rem; }
+.toolkit__pill-label{ font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--body); margin-right:4px; }
+.toolkit__pill{
+  font-size:.78rem; font-weight:700; letter-spacing:.03em; color:var(--red-strong);
+  background:rgba(226,75,74,.09); border:1px solid rgba(226,75,74,.28); border-radius:999px; padding:6px 13px;
+}
 
 /* =====================================================================
    CONTACT
