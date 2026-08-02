@@ -34,8 +34,10 @@ export default function Pokeball({ open, controls, ariaLabel, onOpen, onClose })
     >
       <span ref={sphereRef} className="rt-ball__sphere" aria-hidden="true">
         <span className="rt-ball__shadow" />
+        <span className="rt-ball__beam" />
         <span className="rt-ball__glow" />
-        <span className="rt-ball__cavity" />
+        <span className="rt-ball__rays" />
+        <span className="rt-ball__core" />
         <span className="rt-ball__bottom" />
         <span className="rt-ball__band" />
         <span className="rt-ball__btn" />
