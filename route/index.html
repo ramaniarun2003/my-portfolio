@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ramani Arunachalam — The Route</title>
+  <meta name="description" content="Travel the route to meet the projects I've caught — a developer portfolio for Ramani Arunachalam (CS + EE, UW–Madison)." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ---------- Tokens ---------- */
+    :root{
+      --red:#E24B4A;         /* unifying pokéball accent */
+      --red-deep:#C43C3B;
+      --cream:#FDFDFB;
+      --charcoal:#2A2F36;
+      --heading:#0C2740;
+      --body:#5A6B7A;
+
+      /* biome tints */
+      --city-1:#e7edf3; --city-2:#cdd9e6; --city-3:#8ea6be;
+      --jungle-1:#e6f2e4; --jungle-2:#bfe0b6; --jungle-3:#3f7d4f; --jungle-4:#2c5b39;
+      --desert-1:#fbf1dc; --desert-2:#f4d9a6; --desert-3:#d9a15a; --desert-4:#b97a37;
+      --snow-1:#eef2f6; --snow-2:#d4dee8; --snow-3:#7d90a4;
+      --sea-1:#e4f3f2; --sea-2:#a9dcd9; --sea-3:#2f8f92; --sea-4:#1f6d75;
+
+      --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+      --sans:system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+      --card-radius:18px;
+      --shadow:0 18px 40px -20px rgba(12,39,64,.45);
+      --ball-size:150px;
+    }
+
+    *,*::before,*::after{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--body);
+      background:var(--cream);
+      overflow-x:hidden;
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+    }
+    h1,h2,h3{ font-family:var(--serif); color:var(--heading); line-height:1.1; text-wrap:balance; margin:0; font-weight:600; }
+    p{ margin:0; }
+    a{ color:inherit; }
+
+    .sr-only{
+      position:absolute!important; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+    .skip-link{
+      position:fixed; left:12px; top:-60px; z-index:100;
+      background:var(--heading); color:#fff; padding:10px 16px; border-radius:10px;
+      text-decoration:none; transition:top .18s ease;
+    }
+    .skip-link:focus{ top:12px; }
+
+    :focus-visible{ outline:3px solid var(--red); outline-offset:3px; border-radius:6px; }
+
+    /* ---------- Route shell ---------- */
+    .route{ position:relative; }
+
+    .trail{
+      position:absolute; inset:0; width:100%; height:100%;
+      z-index:2; pointer-events:none; overflow:visible;
+    }
+    .trail__base{
+      fill:none; stroke:rgba(226,75,74,.28); stroke-width:4;
+      stroke-linecap:round; stroke-dasharray:2 16;
+    }
+    .trail__progress{
+      fill:none; stroke:var(--red); stroke-width:4;
+      stroke-linecap:round; stroke-dasharray:2 16;
+    }
+    .trainer{
+      position:absolute; top:0; left:0; z-index:3; width:34px; height:34px;
+      margin:-17px 0 0 -17px; pointer-events:none; will-change:transform;
+    }
+    .trainer__pin{
+      width:34px; height:34px; border-radius:50% 50% 50% 8px;
+      transform:rotate(45deg);
+      background:var(--red); box-shadow:0 6px 14px -4px rgba(196,60,59,.7);
+      display:grid; place-items:center;
+    }
+    .trainer__pin::after{
+      content:""; width:12px; height:12px; border-radius:50%;
+      background:var(--cream); transform:rotate(-45deg);
+    }
+
+    /* ---------- Biomes ---------- */
+    .biome{ position:relative; overflow:hidden; isolation:isolate; }
+    .biome__inner{
+      position:relative; z-index:4;
+      width:min(560px,92vw); margin:0 auto;
+      padding:72px 0 84px;
+    }
+    .biome__eyebrow{
+      font-family:var(--sans); font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+      font-size:.72rem; color:var(--red-deep); margin-bottom:.5rem;
+    }
+    .biome__title{ font-size:clamp(2rem,6vw,3.4rem); margin-bottom:2.2rem; }
+    .biome--city .biome__title{ color:#173049; }
+    .biome--jungle .biome__title{ color:#1f4b2c; }
+    .biome--desert .biome__title{ color:#7a4a17; }
+    .biome--snow .biome__title{ color:#2b3c4e; }
+    .biome--sea .biome__title{ color:#0f4f52; }
+
+    .stop{ display:flex; flex-direction:column; align-items:stretch; gap:22px; }
+
+    /* ---------- Ball ---------- */
+    .ball{
+      appearance:none; border:0; background:transparent; padding:0; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      flex:0 0 auto;
+    }
+    .ball__vis{
+      position:relative; width:var(--ball-size); height:var(--ball-size);
+      filter:drop-shadow(0 12px 18px rgba(42,47,54,.28));
+      transition:transform .25s ease;
+    }
+    .ball:hover .ball__vis{ transform:translateY(-4px) scale(1.03); }
+    .ball__half{ position:absolute; left:0; right:0; height:52%; }
+    .ball__half--top{
+      top:0; background:linear-gradient(160deg,#f0605f,var(--red));
+      border-radius:75px 75px 10px 10px;
+      transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+    }
+    .ball__half--bottom{
+      bottom:0; background:linear-gradient(20deg,#efefe8,var(--cream));
+      border-radius:10px 10px 75px 75px;
+      transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+    }
+    .ball__band{
+      position:absolute; left:0; right:0; top:calc(50% - 5px); height:10px;
+      background:var(--charcoal); border-radius:5px; z-index:2;
+      transition:opacity .2s ease;
+    }
+    .ball__btn{
+      position:absolute; z-index:3; top:50%; left:50%;
+      width:36px; height:36px; margin:-18px 0 0 -18px;
+      border-radius:50%; background:var(--cream);
+      border:5px solid var(--charcoal);
+      transition:opacity .2s ease, transform .2s ease;
+    }
+    .ball:hover .ball__btn{ box-shadow:0 0 0 4px rgba(226,75,74,.25); }
+    .ball__flash{
+      position:absolute; z-index:4; top:50%; left:50%; width:60px; height:60px;
+      margin:-30px 0 0 -30px; border-radius:50%;
+      background:radial-gradient(circle, #fff 0%, rgba(255,244,214,.9) 40%, rgba(255,244,214,0) 70%);
+      opacity:0; pointer-events:none;
+    }
+    .ball__spark{
+      position:absolute; z-index:1; top:8px; right:14px; width:14px; height:14px;
+      background:conic-gradient(from 0deg,#fff,rgba(255,255,255,0) 40%,#fff 60%,rgba(255,255,255,0));
+      opacity:0; transform:scale(.4);
+    }
+    .ball:hover .ball__spark{ animation:spark .7s ease forwards; }
+    @keyframes spark{ 0%{opacity:0;transform:scale(.4) rotate(0)} 40%{opacity:.9} 100%{opacity:0;transform:scale(1.2) rotate(90deg)} }
+
+    .ball__caption{
+      font-family:var(--serif); font-weight:600; font-size:1.02rem; color:var(--heading);
+      background:rgba(253,253,251,.82); padding:3px 12px; border-radius:999px;
+      box-shadow:0 4px 12px -6px rgba(12,39,64,.4);
+    }
+
+    /* arming wobble */
+    .ball.is-arming .ball__vis{ animation:wobble .2s ease; }
+    @keyframes wobble{ 0%{transform:rotate(0)} 25%{transform:rotate(-7deg)} 60%{transform:rotate(6deg)} 100%{transform:rotate(0)} }
+
+    /* open state */
+    .ball.is-open .ball__half--top{ transform:translateY(-62%) rotate(-7deg); }
+    .ball.is-open .ball__half--bottom{ transform:translateY(62%) rotate(7deg); }
+    .ball.is-open .ball__band,
+    .ball.is-open .ball__btn{ opacity:0; }
+    .ball.is-open .ball__flash{ animation:flash .5s ease-out; }
+    @keyframes flash{ 0%{opacity:0;transform:scale(.3)} 25%{opacity:1} 100%{opacity:0;transform:scale(4)} }
+
+    /* ---------- Card ---------- */
+    .card-slot{ width:100%; display:flex; }
+    .card{
+      width:100%; background:var(--cream); border:1px solid rgba(12,39,64,.08);
+      border-radius:var(--card-radius); box-shadow:var(--shadow);
+      padding:26px 26px 28px; position:relative;
+      opacity:0; visibility:hidden; transform:translateY(14px) scale(.94);
+      transform-origin:top center;
+      transition:opacity .3s ease, transform .42s cubic-bezier(.34,1.56,.64,1), visibility 0s linear .42s;
+    }
+    .stop.is-open .card{
+      opacity:1; visibility:visible; transform:none;
+      transition:opacity .3s ease, transform .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    .card__kicker{
+      font-family:var(--sans); font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      font-size:.68rem; color:var(--red-deep); display:flex; align-items:center; gap:8px; margin-bottom:8px;
+    }
+    .card__kicker .tagchip{ background:var(--red); color:#fff; padding:2px 8px; border-radius:999px; letter-spacing:.08em; }
+    .card__title{ font-size:1.5rem; margin-bottom:.5rem; }
+    .card__lead{ color:var(--body); margin-bottom:14px; }
+    .card__lead strong{ color:var(--heading); }
+
+    .pills{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; padding:0; list-style:none; }
+    .pills li{
+      font-size:.75rem; font-weight:600; color:var(--red-deep);
+      background:rgba(226,75,74,.09); border:1px solid rgba(226,75,74,.22);
+      border-radius:999px; padding:5px 11px; white-space:nowrap;
+    }
+    .links{ display:flex; flex-wrap:wrap; gap:10px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:7px; text-decoration:none;
+      font-weight:600; font-size:.9rem; padding:9px 16px; border-radius:999px;
+      transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .btn--primary{ background:var(--red); color:#fff; box-shadow:0 8px 18px -8px rgba(196,60,59,.8); }
+    .btn--primary:hover{ background:var(--red-deep); transform:translateY(-2px); }
+    .btn--ghost{ border:2px solid rgba(12,39,64,.18); color:var(--heading); }
+    .btn--ghost:hover{ border-color:var(--red); color:var(--red-deep); transform:translateY(-2px); }
+
+    .subquest{ display:grid; gap:14px; }
+    .subquest__item{ padding:14px 0; border-top:1px solid rgba(12,39,64,.09); }
+    .subquest__item:first-child{ border-top:0; padding-top:0; }
+    .subquest__head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .subquest__head h4{ font-family:var(--serif); font-size:1.05rem; color:var(--heading); margin:0; font-weight:600; }
+    .subquest__head a{ font-size:.82rem; font-weight:600; color:var(--red-deep); text-decoration:none; white-space:nowrap; }
+    .subquest__head a:hover{ text-decoration:underline; }
+    .subquest__item p{ font-size:.9rem; margin-top:3px; }
+
+    /* ---------- Intro hint ---------- */
+    .hint{
+      position:relative; z-index:4; text-align:center; padding:26px 20px 0;
+      color:var(--city-3); font-size:.9rem;
+    }
+    .hint__arrow{ display:block; margin:10px auto 0; width:22px; height:22px; color:var(--red); animation:bob 1.8s ease-in-out infinite; }
+    @keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+    /* =====================================================================
+       SCENERY  (all decorative, aria-hidden)
+       ===================================================================== */
+    .scenery{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+
+    /* CITY */
+    .biome--city{ background:linear-gradient(180deg,var(--city-1) 0%, #dbe6f0 60%, var(--jungle-1) 100%); }
+    .sky-glow{ position:absolute; top:-10%; left:50%; width:70vw; height:60vw; transform:translateX(-50%);
+      background:radial-gradient(circle,#fff 0%, rgba(255,255,255,0) 65%); }
+    .cloud{ position:absolute; background:#fff; border-radius:100px; opacity:.85; filter:blur(.3px); }
+    .cloud::before,.cloud::after{ content:""; position:absolute; background:#fff; border-radius:50%; }
+    .cloud{ width:120px; height:34px; }
+    .cloud::before{ width:56px; height:56px; top:-24px; left:16px; }
+    .cloud::after{ width:44px; height:44px; top:-16px; right:18px; }
+    .cloud--1{ top:10%; left:-140px; animation:drift 46s linear infinite; }
+    .cloud--2{ top:22%; left:-160px; transform:scale(.7); animation:drift 62s linear infinite 6s; }
+    .cloud--3{ top:6%; left:-160px; transform:scale(1.2); opacity:.7; animation:drift 78s linear infinite 3s; }
+    @keyframes drift{ from{transform:translateX(0)} to{transform:translateX(120vw)} }
+    .skyline{ position:absolute; left:0; right:0; bottom:0; height:44%; }
+    .skyline span{ position:absolute; bottom:0; background:linear-gradient(180deg,#9db4c9,#7f9ab4); border-radius:4px 4px 0 0; opacity:.6; }
+
+    /* JUNGLE */
+    .biome--jungle{ background:linear-gradient(180deg,var(--jungle-1) 0%, #a9d6a0 55%, var(--desert-1) 100%); }
+    .canopy{ position:absolute; left:0; right:0; top:-4%; height:52%; }
+    .leaf-blob{ position:absolute; border-radius:60% 40% 55% 45%; opacity:.8; }
+    .dapple{ position:absolute; inset:0; background:
+      radial-gradient(circle at 20% 30%, rgba(255,255,240,.5) 0 3%, transparent 8%),
+      radial-gradient(circle at 62% 18%, rgba(255,255,240,.4) 0 2%, transparent 7%),
+      radial-gradient(circle at 80% 40%, rgba(255,255,240,.45) 0 3%, transparent 9%); }
+    .frond{ position:absolute; width:170px; height:250px; background:var(--jungle-3);
+      border-radius:0 100% 0 100%; opacity:.55; transform-origin:bottom center; }
+    .frond--l{ bottom:-30px; left:-40px; transform:rotate(14deg); animation:sway 6s ease-in-out infinite; }
+    .frond--r{ bottom:-30px; right:-40px; transform:rotate(-14deg) scaleX(-1); animation:sway 7s ease-in-out infinite reverse; }
+    .frond--r2{ top:-40px; right:8%; width:120px; height:180px; background:var(--jungle-4); opacity:.4; transform:rotate(160deg); animation:sway 8s ease-in-out infinite; }
+    @keyframes sway{ 0%,100%{transform:rotate(var(--rot,12deg))} 50%{transform:rotate(calc(var(--rot,12deg) + 4deg))} }
+
+    /* DESERT */
+    .biome--desert{ background:linear-gradient(180deg,var(--desert-1) 0%, #f3d59c 55%, var(--snow-1) 100%); }
+    .sun{ position:absolute; top:9%; right:14%; width:120px; height:120px; border-radius:50%;
+      background:radial-gradient(circle,#fff2cf,#f6cf82); box-shadow:0 0 90px 30px rgba(246,207,130,.5); }
+    .dune{ position:absolute; left:-5%; right:-5%; border-radius:50%; }
+    .dune--1{ bottom:-14%; height:40%; background:#e9be74; opacity:.75; }
+    .dune--2{ bottom:-22%; height:46%; background:#d9a15a; opacity:.7; }
+    .cactus{ position:absolute; bottom:12%; left:12%; width:26px; height:120px; background:#5c8b52; border-radius:14px; }
+    .cactus::before,.cactus::after{ content:""; position:absolute; width:20px; height:44px; background:#5c8b52; border-radius:12px; }
+    .cactus::before{ left:-22px; bottom:44px; border-radius:12px 12px 0 12px; box-shadow:-0 -22px 0 -0 #5c8b52; }
+    .cactus::after{ right:-22px; bottom:60px; border-radius:12px 12px 12px 0; }
+    .cactus__arm{ position:absolute; bottom:12%; left:12%; }
+    .haze{ position:absolute; left:0; right:0; bottom:0; height:55%;
+      background:linear-gradient(0deg, rgba(255,240,200,.5), transparent);
+      animation:shimmer 3.2s ease-in-out infinite; }
+    @keyframes shimmer{ 0%,100%{transform:translateY(0) scaleY(1); opacity:.5} 50%{transform:translateY(-4px) scaleY(1.03); opacity:.72} }
+
+    /* SNOW */
+    .biome--snow{ background:linear-gradient(180deg,var(--snow-1) 0%, #c4d2e0 55%, var(--sea-1) 100%); }
+    .peak{ position:absolute; bottom:0; border-style:solid; border-color:transparent; opacity:.5; }
+    .peak--1{ left:6%; border-width:0 130px 220px 130px; border-bottom-color:#9fb2c6; }
+    .peak--2{ right:8%; border-width:0 170px 280px 170px; border-bottom-color:#8ba0b7; }
+    .peak__cap{ position:absolute; bottom:0; }
+    .flake{ position:absolute; top:-10px; width:7px; height:7px; border-radius:50%; background:#fff; opacity:.9; }
+
+    /* SEA */
+    .biome--sea{ background:linear-gradient(180deg,var(--sea-1) 0%, #7fcac6 60%, var(--sea-4) 100%); }
+    .horizon{ position:absolute; top:24%; left:0; right:0; height:2px; background:rgba(255,255,255,.4); }
+    .wave{ position:absolute; left:-10%; right:-10%; height:60px; border-radius:50%;
+      background:rgba(255,255,255,.28); }
+    .wave--1{ bottom:22%; animation:roll 7s ease-in-out infinite; }
+    .wave--2{ bottom:12%; height:80px; background:rgba(255,255,255,.2); animation:roll 9s ease-in-out infinite reverse; }
+    .wave--3{ bottom:2%; height:100px; background:rgba(31,109,117,.35); animation:roll 11s ease-in-out infinite; }
+    @keyframes roll{ 0%,100%{transform:translateX(0)} 50%{transform:translateX(30px)} }
+
+    /* ---------- Footer ---------- */
+    .footer{ background:var(--sea-4); color:rgba(255,255,255,.82); text-align:center; padding:26px 16px; font-size:.85rem; }
+    .footer a{ color:#fff; }
+
+    /* =====================================================================
+       DESKTOP LAYOUT (winding, alternating sides)
+       ===================================================================== */
+    @media (min-width:721px){
+      .biome__inner{ width:min(1200px,92vw); min-height:760px; padding:0; }
+      .stop{ position:absolute; top:0; bottom:0; left:0; right:0; display:block; }
+      .ball{ position:absolute; top:50%; margin-top:calc(var(--ball-size) / -2 - 26px); }
+      .stop--right .ball{ right:2%; }
+      .stop--left .ball{ left:2%; }
+      .card-slot{ position:absolute; top:0; bottom:0; width:min(440px,46%); align-items:center; }
+      .stop--right .card-slot{ left:4%; }
+      .stop--left .card-slot{ right:4%; }
+      .biome__head{ position:absolute; top:64px; left:0; right:0; }
+      .stop--right .biome__head{ text-align:left; }
+      .stop--left .biome__head{ text-align:right; }
+      .biome__title{ margin-bottom:0; }
+    }
+    /* mobile: header sits above the stop naturally */
+    @media (max-width:720px){
+      .biome__inner{ --ball-size:128px; }
+      .biome__head{ margin-bottom:6px; text-align:left; }
+      .ball{ align-self:center; }                   /* centered, then nudged for the serpentine */
+      .stop--right .ball{ transform:translateX(24%); }
+      .stop--left  .ball{ transform:translateX(-24%); }
+    }
+
+    /* =====================================================================
+       REDUCED MOTION
+       ===================================================================== */
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior:auto; }
+      *,*::before,*::after{ animation:none!important; transition-duration:.001ms!important; }
+      .cloud,.frond,.haze,.wave,.flake,.hint__arrow{ animation:none!important; }
+      .ball__flash,.ball__spark{ display:none!important; }
+      .card{ transition:opacity .18s ease, visibility 0s!important; transform:none!important; }
+      .stop.is-open .card{ transform:none!important; }
+      .ball.is-open .ball__half--top{ transform:translateY(-62%); }
+      .ball.is-open .ball__half--bottom{ transform:translateY(62%); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <main id="content" class="route" aria-label="Ramani's route — scroll to travel and open the balls to meet each project">
+
+    <!-- single continuous trail (decorative) -->
+    <svg class="trail" aria-hidden="true" preserveAspectRatio="none">
+      <path class="trail__base" d="" />
+      <path class="trail__progress" d="" />
+    </svg>
+    <div class="trainer" aria-hidden="true"><div class="trainer__pin"></div></div>
+
+    <!-- ========================= CITY ========================= -->
+    <section class="biome biome--city" aria-labelledby="city-title">
+      <div class="scenery" aria-hidden="true">
+        <div class="sky-glow"></div>
+        <div class="cloud cloud--1"></div>
+        <div class="cloud cloud--2"></div>
+        <div class="cloud cloud--3"></div>
+        <div class="skyline">
+          <span style="left:4%;width:56px;height:60%"></span>
+          <span style="left:12%;width:44px;height:78%"></span>
+          <span style="left:20%;width:64px;height:52%"></span>
+          <span style="left:31%;width:40px;height:88%"></span>
+          <span style="left:40%;width:70px;height:66%"></span>
+          <span style="left:58%;width:48px;height:72%"></span>
+          <span style="left:67%;width:60px;height:56%"></span>
+          <span style="left:78%;width:44px;height:84%"></span>
+          <span style="left:88%;width:66px;height:62%"></span>
+        </div>
+      </div>
+      <p class="hint">Scroll the route. Open a ball to meet each project.
+        <svg class="hint__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+      </p>
+      <div class="biome__inner">
+        <div class="stop stop--right" data-stop>
+          <div class="biome__head">
+            <p class="biome__eyebrow">Where it started</p>
+            <h2 class="biome__title" id="city-title">The City</h2>
+          </div>
+          <button class="ball" type="button" aria-expanded="false" aria-controls="card-city" aria-label="Open the introduction">
+            <span class="ball__vis" aria-hidden="true">
+              <span class="ball__spark"></span>
+              <span class="ball__half ball__half--top"></span>
+              <span class="ball__half ball__half--bottom"></span>
+              <span class="ball__band"></span>
+              <span class="ball__btn"></span>
+              <span class="ball__flash"></span>
+            </span>
+            <span class="ball__caption" aria-hidden="true">Hello</span>
+          </button>
+          <div class="card-slot">
+            <article class="card" id="card-city" aria-labelledby="card-city-title" tabindex="-1">
+              <p class="card__kicker">Trainer profile</p>
+              <h3 class="card__title" id="card-city-title">Ramani Arunachalam</h3>
+              <p class="card__lead">Computer Science + Electrical Engineering at UW–Madison.
+                <strong>I build systems that are correct under the hood and interfaces that feel good to use.</strong></p>
+              <ul class="pills">
+                <li>Full-stack</li><li>Systems</li><li>Cloud</li><li>Design-minded</li>
+              </ul>
+              <div class="links">
+                <a class="btn btn--primary" href="https://docs.google.com/document/d/1g7fsLNnx55Yc5uGAxTwSjeNRz7kBwrW4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Résumé</a>
+                <a class="btn btn--ghost" href="https://github.com/ramaniarun2003" target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= JUNGLE ========================= -->
+    <section class="biome biome--jungle" aria-labelledby="jungle-title">
+      <div class="scenery" aria-hidden="true">
+        <div class="canopy">
+          <span class="leaf-blob" style="top:-6%;left:-4%;width:280px;height:200px;background:var(--jungle-4)"></span>
+          <span class="leaf-blob" style="top:-10%;left:26%;width:240px;height:180px;background:var(--jungle-3)"></span>
+          <span class="leaf-blob" style="top:-8%;right:-2%;width:300px;height:210px;background:var(--jungle-4)"></span>
+          <span class="leaf-blob" style="top:-12%;right:30%;width:200px;height:160px;background:var(--jungle-3)"></span>
+        </div>
+        <div class="dapple"></div>
+        <div class="frond frond--l" style="--rot:14deg"></div>
+        <div class="frond frond--r" style="--rot:-14deg"></div>
+        <div class="frond frond--r2" style="--rot:160deg"></div>
+      </div>
+      <div class="biome__inner">
+        <div class="stop stop--left" data-stop>
+          <div class="biome__head">
+            <p class="biome__eyebrow">The big build</p>
+            <h2 class="biome__title" id="jungle-title">The Jungle</h2>
+          </div>
+          <button class="ball" type="button" aria-expanded="false" aria-controls="card-finsight" aria-label="Open the featured project, FinSight">
+            <span class="ball__vis" aria-hidden="true">
+              <span class="ball__spark"></span>
+              <span class="ball__half ball__half--top"></span>
+              <span class="ball__half ball__half--bottom"></span>
+              <span class="ball__band"></span>
+              <span class="ball__btn"></span>
+              <span class="ball__flash"></span>
+            </span>
+            <span class="ball__caption" aria-hidden="true">FinSight</span>
+          </button>
+          <div class="card-slot">
+            <article class="card" id="card-finsight" aria-labelledby="card-finsight-title" tabindex="-1">
+              <p class="card__kicker"><span class="tagchip">Featured</span> Project</p>
+              <h3 class="card__title" id="card-finsight-title">FinSight</h3>
+              <p class="card__lead">A hybrid GraphRAG assistant that reads SEC 10-K filings and answers questions
+                conversationally — combining <strong>vector search</strong> with a <strong>knowledge graph</strong> over financial data.</p>
+              <ul class="pills"><li>React</li><li>FastAPI</li><li>RavenDB</li><li>GraphRAG</li></ul>
+              <div class="links">
+                <a class="btn btn--primary" href="https://node-service-582986331404.us-central1.run.app" target="_blank" rel="noopener noreferrer">Live Demo</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= DESERT ========================= -->
+    <section class="biome biome--desert" aria-labelledby="desert-title">
+      <div class="scenery" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="dune dune--1"></div>
+        <div class="dune dune--2"></div>
+        <div class="cactus"></div>
+        <div class="haze"></div>
+      </div>
+      <div class="biome__inner">
+        <div class="stop stop--right" data-stop>
+          <div class="biome__head">
+            <p class="biome__eyebrow">What I debug</p>
+            <h2 class="biome__title" id="desert-title">The Desert</h2>
+          </div>
+          <button class="ball" type="button" aria-expanded="false" aria-controls="card-debug" aria-label="Open a debugging war story">
+            <span class="ball__vis" aria-hidden="true">
+              <span class="ball__spark"></span>
+              <span class="ball__half ball__half--top"></span>
+              <span class="ball__half ball__half--bottom"></span>
+              <span class="ball__band"></span>
+              <span class="ball__btn"></span>
+              <span class="ball__flash"></span>
+            </span>
+            <span class="ball__caption" aria-hidden="true">War story</span>
+          </button>
+          <div class="card-slot">
+            <article class="card" id="card-debug" aria-labelledby="card-debug-title" tabindex="-1">
+              <p class="card__kicker">Root-cause</p>
+              <h3 class="card__title" id="card-debug-title">The worker that silently froze</h3>
+              <p class="card__lead">I root-caused why a background worker had silently frozen in production —
+                <strong>no error, no crash</strong> — and traced it to CPU throttling and scale-to-zero on Google Cloud Run.</p>
+              <ul class="pills"><li>Google Cloud Run</li><li>Observability</li><li>Concurrency</li><li>Root-cause analysis</li></ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= SNOW ========================= -->
+    <section class="biome biome--snow" aria-labelledby="snow-title">
+      <div class="scenery" aria-hidden="true">
+        <div class="peak peak--1"></div>
+        <div class="peak peak--2"></div>
+        <div class="flake" style="left:12%"></div>
+        <div class="flake" style="left:28%"></div>
+        <div class="flake" style="left:44%"></div>
+        <div class="flake" style="left:61%"></div>
+        <div class="flake" style="left:76%"></div>
+        <div class="flake" style="left:90%"></div>
+      </div>
+      <div class="biome__inner">
+        <div class="stop stop--left" data-stop>
+          <div class="biome__head">
+            <p class="biome__eyebrow">Side quests</p>
+            <h2 class="biome__title" id="snow-title">The Snowfield</h2>
+          </div>
+          <button class="ball" type="button" aria-expanded="false" aria-controls="card-side" aria-label="Open the side-quest projects">
+            <span class="ball__vis" aria-hidden="true">
+              <span class="ball__spark"></span>
+              <span class="ball__half ball__half--top"></span>
+              <span class="ball__half ball__half--bottom"></span>
+              <span class="ball__band"></span>
+              <span class="ball__btn"></span>
+              <span class="ball__flash"></span>
+            </span>
+            <span class="ball__caption" aria-hidden="true">Side quests</span>
+          </button>
+          <div class="card-slot">
+            <article class="card" id="card-side" aria-labelledby="card-side-title" tabindex="-1">
+              <p class="card__kicker">More projects</p>
+              <h3 class="card__title" id="card-side-title">Side quests</h3>
+              <div class="subquest">
+                <div class="subquest__item">
+                  <div class="subquest__head">
+                    <h4>Stock Info</h4>
+                    <a href="https://github.com/ramaniarun2003/aws-stockinfo-lambda" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                  </div>
+                  <p>Serverless stock tracking on AWS DynamoDB + Lambda.</p>
+                  <ul class="pills"><li>AWS</li><li>Lambda</li><li>DynamoDB</li></ul>
+                </div>
+                <div class="subquest__item">
+                  <div class="subquest__head">
+                    <h4>Dijkstra Visualizer</h4>
+                    <a href="https://github.com/ramaniarun2003/Dijikstras" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                  </div>
+                  <p>Interactive shortest-path pathfinding, built in JavaFX.</p>
+                  <ul class="pills"><li>Java</li><li>JavaFX</li><li>Algorithms</li></ul>
+                </div>
+                <div class="subquest__item">
+                  <div class="subquest__head">
+                    <h4>Pokémon Battle Simulator</h4>
+                    <a href="https://github.com/ramaniarun2003/pokemon-battle-sim" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                  </div>
+                  <p>Simulates and analyzes battle outcomes in Python.</p>
+                  <ul class="pills"><li>Python</li><li>Simulation</li></ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= SEA ========================= -->
+    <section class="biome biome--sea" aria-labelledby="sea-title">
+      <div class="scenery" aria-hidden="true">
+        <div class="horizon"></div>
+        <div class="wave wave--1"></div>
+        <div class="wave wave--2"></div>
+        <div class="wave wave--3"></div>
+      </div>
+      <div class="biome__inner">
+        <div class="stop stop--right" data-stop>
+          <div class="biome__head">
+            <p class="biome__eyebrow">Say hi</p>
+            <h2 class="biome__title" id="sea-title">The Sea</h2>
+          </div>
+          <button class="ball" type="button" aria-expanded="false" aria-controls="card-contact" aria-label="Open contact details">
+            <span class="ball__vis" aria-hidden="true">
+              <span class="ball__spark"></span>
+              <span class="ball__half ball__half--top"></span>
+              <span class="ball__half ball__half--bottom"></span>
+              <span class="ball__band"></span>
+              <span class="ball__btn"></span>
+              <span class="ball__flash"></span>
+            </span>
+            <span class="ball__caption" aria-hidden="true">Contact</span>
+          </button>
+          <div class="card-slot">
+            <article class="card" id="card-contact" aria-labelledby="card-contact-title" tabindex="-1">
+              <p class="card__kicker">The trail continues</p>
+              <h3 class="card__title" id="card-contact-title">Say hi</h3>
+              <p class="card__lead">Interested in collaborating, or hiring? The route runs off into the water here —
+                send me a message and let's talk.</p>
+              <div class="links">
+                <a class="btn btn--primary" href="mailto:ramaniarun2003@gmail.com">Email me</a>
+                <a class="btn btn--ghost" href="https://github.com/ramaniarun2003" target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Built by Ramani Arunachalam — original art, no trademarked characters. ·
+      <a href="mailto:ramaniarun2003@gmail.com">ramaniarun2003@gmail.com</a>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      "use strict";
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      /* ---------- Ball open / close ---------- */
+      var stops = Array.prototype.slice.call(document.querySelectorAll('[data-stop]'));
+      var openStop = null;
+
+      function setOpen(stop, open){
+        var ball = stop.querySelector('.ball');
+        var card = stop.querySelector('.card');
+        stop.classList.toggle('is-open', open);
+        ball.classList.toggle('is-open', open);
+        ball.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if(open){ card.removeAttribute('inert'); }
+        else{ card.setAttribute('inert',''); }
+      }
+
+      function openBall(stop){
+        if(openStop && openStop !== stop){ setOpen(openStop, false); }
+        var ball = stop.querySelector('.ball');
+        var card = stop.querySelector('.card');
+        var doOpen = function(){
+          setOpen(stop, true);
+          openStop = stop;
+          buildTrail();
+          // move focus into the revealed card for keyboard users
+          window.setTimeout(function(){ try{ card.focus({preventScroll:true}); }catch(e){ card.focus(); } }, reduce.matches ? 0 : 120);
+        };
+        if(reduce.matches){ doOpen(); return; }
+        ball.classList.add('is-arming');
+        window.setTimeout(function(){ ball.classList.remove('is-arming'); doOpen(); }, 190);
+      }
+
+      function closeBall(stop){
+        setOpen(stop, false);
+        if(openStop === stop){ openStop = null; }
+        buildTrail();
+        stop.querySelector('.ball').focus();
+      }
+
+      stops.forEach(function(stop){
+        var ball = stop.querySelector('.ball');
+        var card = stop.querySelector('.card');
+        card.setAttribute('inert','');
+        ball.addEventListener('click', function(){
+          if(stop.classList.contains('is-open')){ closeBall(stop); }
+          else{ openBall(stop); }
+        });
+        // recompute after the reveal transition changes mobile layout height
+        card.addEventListener('transitionend', function(e){ if(e.propertyName === 'transform' || e.propertyName === 'opacity'){ buildTrail(); } });
+      });
+
+      // Esc closes the open ball
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' && openStop){ closeBall(openStop); }
+      });
+
+      /* ---------- Trail (single continuous path through the balls) ---------- */
+      var route = document.querySelector('.route');
+      var svg = document.querySelector('.trail');
+      var base = svg.querySelector('.trail__base');
+      var prog = svg.querySelector('.trail__progress');
+      var trainer = document.querySelector('.trainer');
+      var balls = Array.prototype.slice.call(document.querySelectorAll('.ball'));
+      var pathLen = 0;
+
+      function catmullRom(pts){
+        if(pts.length < 2) return '';
+        var d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+        for(var i=0; i<pts.length-1; i++){
+          var p0 = pts[i-1] || pts[i];
+          var p1 = pts[i];
+          var p2 = pts[i+1];
+          var p3 = pts[i+2] || p2;
+          var c1x = p1.x + (p2.x - p0.x) / 6;
+          var c1y = p1.y + (p2.y - p0.y) / 6;
+          var c2x = p2.x - (p3.x - p1.x) / 6;
+          var c2y = p2.y - (p3.y - p1.y) / 6;
+          d += ' C ' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ', ' +
+                       c2x.toFixed(1) + ' ' + c2y.toFixed(1) + ', ' +
+                       p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
+        }
+        return d;
+      }
+
+      function buildTrail(){
+        var rRect = route.getBoundingClientRect();
+        var W = route.clientWidth, H = route.clientHeight;
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        var pts = [{ x: W*0.5, y: 0 }];
+        balls.forEach(function(b){
+          var v = b.querySelector('.ball__vis');
+          var bb = v.getBoundingClientRect();
+          pts.push({
+            x: bb.left - rRect.left + bb.width/2,
+            y: bb.top  - rRect.top  + bb.height/2
+          });
+        });
+        pts.push({ x: W*0.5, y: H });
+        var d = catmullRom(pts);
+        base.setAttribute('d', d);
+        prog.setAttribute('d', d);
+        pathLen = base.getTotalLength();
+        prog.style.strokeDasharray = pathLen + ' ' + pathLen;
+        updateProgress();
+      }
+
+      function updateProgress(){
+        if(!pathLen) return;
+        var rRect = route.getBoundingClientRect();
+        var routeTop = rRect.top;               // viewport-relative
+        var H = route.clientHeight;
+        var marker = (window.innerHeight * 0.5) - routeTop;
+        var t = Math.max(0, Math.min(1, marker / H));
+        // reveal traveled portion
+        prog.style.strokeDashoffset = (pathLen * (1 - t)).toFixed(1);
+        // advance trainer
+        var pt = base.getPointAtLength(pathLen * t);
+        trainer.style.transform = 'translate(' + pt.x.toFixed(1) + 'px,' + pt.y.toFixed(1) + 'px)';
+      }
+
+      /* ---------- Parallax (skipped under reduced motion) ---------- */
+      var sceneryLayers = Array.prototype.slice.call(document.querySelectorAll('.scenery'));
+      function parallax(){
+        if(reduce.matches) return;
+        sceneryLayers.forEach(function(layer){
+          var host = layer.parentElement;
+          var r = host.getBoundingClientRect();
+          var mid = r.top + r.height/2 - window.innerHeight/2;
+          layer.style.transform = 'translateY(' + (mid * -0.04).toFixed(1) + 'px)';
+        });
+      }
+
+      /* ---------- rAF scroll loop ---------- */
+      var ticking = false;
+      function onScroll(){
+        if(ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function(){
+          updateProgress();
+          parallax();
+          ticking = false;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive:true });
+
+      var resizeTimer;
+      function onResize(){
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(buildTrail, 120);
+      }
+      window.addEventListener('resize', onResize);
+
+      // build once now, and again after webfont load may shift layout
+      buildTrail();
+      window.addEventListener('load', function(){ buildTrail(); parallax(); });
+      if(document.fonts && document.fonts.ready){ document.fonts.ready.then(buildTrail); }
+
+      /* ---------- Deep link: open a card via URL hash (e.g. #card-finsight) ---------- */
+      function openFromHash(){
+        var id = (window.location.hash || '').replace('#','');
+        if(!id) return;
+        var card = document.getElementById(id);
+        if(!card) return;
+        var st = card.closest('[data-stop]');
+        if(st && !st.classList.contains('is-open')){ openBall(st); }
+      }
+      openFromHash();
+      window.addEventListener('hashchange', openFromHash);
+    })();
+  </script>
+</body>
+</html>
