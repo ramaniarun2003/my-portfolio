@@ -34,19 +34,23 @@ export default function Pokeball({ open, controls, ariaLabel, onOpen, onClose })
     >
       <span ref={sphereRef} className="rt-ball__sphere" aria-hidden="true">
         <span className="rt-ball__shadow" />
-        <span className="rt-ball__beam" />
+        {/* light burst */}
         <span className="rt-ball__glow" />
-        <span className="rt-ball__rays" />
+        <span className="rt-ball__beam" />
+        {/* open 3/4 view: lid up + bowl you see into */}
+        <span className="rt-ball__lid" />
+        <span className="rt-ball__bowl" />
+        <span className="rt-ball__cavity" />
+        <span className="rt-ball__rim" />
         <span className="rt-ball__core" />
-        <span className="rt-ball__bottom" />
+        <span className="rt-ball__rays" />
+        <span className="rt-ball__seam" />
+        {/* closed front-facing halves (fade out when open) */}
+        <span className="rt-ball__c-top" />
+        <span className="rt-ball__c-bottom" />
         <span className="rt-ball__band" />
         <span className="rt-ball__btn" />
         <span className="rt-ball__pulse" />
-        <span className="rt-ball__top">
-          <span className="rt-ball__face rt-ball__face--out" />
-          <span className="rt-ball__face rt-ball__face--in" />
-        </span>
-        <span className="rt-ball__seam" />
       </span>
       <span className="sr-only">{ariaLabel}</span>
     </button>
