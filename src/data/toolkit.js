@@ -1,16 +1,17 @@
-// About "toolkit" — the real resume stack. Items with `img` use a logo in
-// /public/img; the rest are drawn as SVG logos in TechLogo.jsx.
+// About "toolkit" — the real resume stack, rendered from official brand SVGs
+// in /public/img/tech (sourced from the tech-stack-icons set; FastAPI from
+// devicon, which the set doesn't include).
 export const tools = [
-  { key: 'python', label: 'Python', img: '/img/python.png' },
-  { key: 'java', label: 'Java', img: '/img/java.png' },
-  { key: 'react', label: 'React / JavaScript' },
-  { key: 'typescript', label: 'TypeScript' },
-  { key: 'fastapi', label: 'FastAPI' },
-  { key: 'nodejs', label: 'Node.js' },
-  { key: 'googlecloud', label: 'Google Cloud' },
-  { key: 'aws', label: 'AWS', img: '/img/aws.png' },
-  { key: 'docker', label: 'Docker' },
-  { key: 'github', label: 'Git / GitHub', img: '/img/github.png' },
+  { key: 'python', label: 'Python', img: '/img/tech/python.svg' },
+  { key: 'java', label: 'Java', img: '/img/tech/java.svg' },
+  { key: 'react', label: 'React / JavaScript', img: '/img/tech/react.svg' },
+  { key: 'typescript', label: 'TypeScript', img: '/img/tech/typescript.svg' },
+  { key: 'fastapi', label: 'FastAPI', img: '/img/tech/fastapi.svg' },
+  { key: 'nodejs', label: 'Node.js', img: '/img/tech/nodejs.svg' },
+  { key: 'googlecloud', label: 'Google Cloud', img: '/img/tech/googlecloud.svg' },
+  { key: 'aws', label: 'AWS', img: '/img/tech/aws.svg' },
+  { key: 'docker', label: 'Docker', img: '/img/tech/docker.svg' },
+  { key: 'github', label: 'Git / GitHub', img: '/img/tech/github.svg' },
 ];
 
 // AI / Data standouts that lack clean brand logos — surfaced as text pills.
