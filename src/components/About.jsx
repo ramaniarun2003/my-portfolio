@@ -1,4 +1,5 @@
-import { skillBadges } from '../data/skills';
+import { tools, differentiators } from '../data/toolkit';
+import TechLogo from './icons/TechLogo';
 
 export default function About() {
   return (
@@ -15,10 +16,13 @@ export default function About() {
           silently frozen in production</strong> — no error, no crash — tracing it to CPU throttling and
           scale-to-zero on Google Cloud Run.
         </p>
-        <div className="about-badges" aria-label="Tools I work with">
-          {skillBadges.map((tech) => (
-            <img key={tech} src={`img/${tech}.png`} alt={tech} className="about-badge" />
-          ))}
+
+        <div className="toolkit" aria-label="Toolkit">
+          {tools.map((tool) => <TechLogo key={tool.key} tool={tool} />)}
+        </div>
+        <div className="toolkit__pills" aria-label="AI and data focus">
+          <span className="toolkit__pill-label">AI · Data</span>
+          {differentiators.map((d) => <span key={d} className="toolkit__pill">{d}</span>)}
         </div>
       </div>
     </section>

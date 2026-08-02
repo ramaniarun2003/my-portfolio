@@ -1,6 +1,7 @@
 // Route-ribbon content, separated from presentation.
-// Each biome owns a connecting trail path (endpoints meet at the seams) for
-// desktop (ribbon at x=22) and mobile (centred at x=50).
+// The trail weaves the FULL width: each biome's node sits at an alternating
+// extreme (left 18% / right 82%), seams meet at centre (x=50) so the path stays
+// continuous, and each card sits on the side OPPOSITE its ball.
 const RESUME = 'https://docs.google.com/document/d/1g7fsLNnx55Yc5uGAxTwSjeNRz7kBwrW4/edit?usp=sharing';
 const GITHUB = 'https://github.com/ramaniarun2003';
 
@@ -10,8 +11,10 @@ export const biomes = [
     scenery: 'city',
     label: 'City · Where it started',
     labelColor: '#35506A',
-    trail: 'M22,0 C26,16 18,34 22,50 C26,66 18,84 22,100',
-    trailMobile: 'M50,0 C56,16 44,34 50,50 C56,66 44,84 50,100',
+    side: 'left',
+    ballX: '18%',
+    trail: 'M50,0 C50,16 18,30 18,50 C18,70 50,84 50,100',
+    trailMobile: 'M50,0 C50,16 30,30 30,50 C30,70 50,84 50,100',
     aria: 'City region: where it started',
     card: {
       chapter: 'Chapter 01 · City',
@@ -30,8 +33,10 @@ export const biomes = [
     scenery: 'jungle',
     label: 'Jungle · The big build',
     labelColor: '#2F5A3C',
-    trail: 'M22,0 C18,16 26,34 22,50 C18,66 26,84 22,100',
-    trailMobile: 'M50,0 C44,16 56,34 50,50 C44,66 56,84 50,100',
+    side: 'right',
+    ballX: '82%',
+    trail: 'M50,0 C50,16 82,30 82,50 C82,70 50,84 50,100',
+    trailMobile: 'M50,0 C50,16 70,30 70,50 C70,70 50,84 50,100',
     aria: 'Jungle region: the big build',
     card: {
       chapter: 'Chapter 02 · Jungle',
@@ -50,8 +55,10 @@ export const biomes = [
     scenery: 'desert',
     label: 'Desert · What I debug',
     labelColor: '#7A4A17',
-    trail: 'M22,0 C26,16 18,34 22,50 C26,66 18,84 22,100',
-    trailMobile: 'M50,0 C56,16 44,34 50,50 C56,66 44,84 50,100',
+    side: 'left',
+    ballX: '18%',
+    trail: 'M50,0 C50,16 18,30 18,50 C18,70 50,84 50,100',
+    trailMobile: 'M50,0 C50,16 30,30 30,50 C30,70 50,84 50,100',
     aria: 'Desert region: what I debug',
     card: {
       chapter: 'Chapter 03 · Desert',
@@ -70,8 +77,10 @@ export const biomes = [
     scenery: 'sea',
     label: 'Sea · Say hi',
     labelColor: '#0F4F52',
-    trail: 'M22,0 C18,16 26,34 22,50 C18,66 26,84 22,100',
-    trailMobile: 'M50,0 C44,16 56,34 50,50 C44,66 56,84 50,100',
+    side: 'right',
+    ballX: '82%',
+    trail: 'M50,0 C50,16 82,30 82,50 C82,70 50,84 50,100',
+    trailMobile: 'M50,0 C50,16 70,30 70,50 C70,70 50,84 50,100',
     aria: 'Sea region: say hi',
     card: {
       chapter: 'Chapter 04 · Sea',
