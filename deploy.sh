@@ -19,7 +19,9 @@ if [[ -f deploy.env ]]; then
 fi
 
 : "${S3_BUCKET:?Set S3_BUCKET (e.g. S3_BUCKET=my-portfolio-bucket ./deploy.sh)}"
-: "${CLOUDFRONT_DISTRIBUTION_ID:?Set CLOUDFRONT_DISTRIBUTION_ID (e.g. CLOUDFRONT_DISTRIBUTION_ID=E123ABC ./deploy.sh)}"
+# CLOUDFRONT_DISTRIBUTION_ID is optional. Leave it empty if the bucket is served
+# directly via S3 static website hosting (no CloudFront in front of it).
+CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID:-}"
 
 echo "==> Building production bundle"
 npm run build
@@ -27,9 +29,13 @@ npm run build
 echo "==> Syncing dist/ to s3://${S3_BUCKET}"
 aws s3 sync dist/ "s3://${S3_BUCKET}" --delete
 
-echo "==> Invalidating CloudFront cache (${CLOUDFRONT_DISTRIBUTION_ID})"
-aws cloudfront create-invalidation \
-  --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
-  --paths "/*"
-
-echo "==> Done. Allow a minute or two for the CloudFront invalidation to complete."
+if [[ -n "${CLOUDFRONT_DISTRIBUTION_ID}" ]]; then
+  echo "==> Invalidating CloudFront cache (${CLOUDFRONT_DISTRIBUTION_ID})"
+  aws cloudfront create-invalidation \
+    --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+    --paths "/*"
+  echo "==> Done. Allow a minute or two for the CloudFront invalidation to complete."
+else
+  echo "==> No CLOUDFRONT_DISTRIBUTION_ID set; skipping invalidation (serving from S3 website endpoint)."
+  echo "==> Done."
+fi
