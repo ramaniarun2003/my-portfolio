@@ -20,15 +20,9 @@
   --biome-desert:#F6EBD6;
   --biome-sea:#D7EFF4;
 
-  /* pill tones */
-  --pill-blue-bg:rgba(27,94,138,.10);  --pill-blue-bd:rgba(27,94,138,.28);  --pill-blue-tx:#1B5E8A;
-  --pill-red-bg:rgba(196,60,59,.10);   --pill-red-bd:rgba(196,60,59,.30);   --pill-red-tx:#C43C3B;
-  --pill-green-bg:rgba(31,107,58,.10); --pill-green-bd:rgba(31,107,58,.28);  --pill-green-tx:#1F6B3A;
-
   --serif:'Fraunces', Georgia, 'Times New Roman', serif;
   --sans:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  --pb-size:116px;
   --shadow:0 18px 40px -22px rgba(12,39,64,.5);
   --radius:16px;
 }
@@ -132,7 +126,6 @@ a{ color:inherit; }
 }
 .hero__ball{ width:clamp(120px,26vw,180px); height:auto; margin:0 auto 2rem; display:block; }
 .hero__ball-bob{ animation:bob 4.5s ease-in-out infinite; transform-origin:center; }
-@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-14px); } }
 .hero-title{
   font-size:clamp(2.2rem,6vw,3.6rem); margin-bottom:1.1rem; letter-spacing:-.5px;
 }
@@ -143,105 +136,76 @@ a{ color:inherit; }
 .hero__cta{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
 
 /* =====================================================================
-   PROJECTS — Biome trail (city → jungle → desert → sea)
-   One continuous dashed route winds through four full-width biome bands.
+   PROJECTS — Route ribbon
+   One traveling "you are here" marker rides a continuous trail through
+   four biome bands; a planted, openable poké-ball in each reveals a card
+   that folds out ABOVE the ball (never clipped by the shell).
    ===================================================================== */
-.biome-trail{ position:relative; }
-
-/* the continuous route, threaded through every poké-ball via SVG */
-.bt-trail{ position:absolute; inset:0; width:100%; height:100%; z-index:2; pointer-events:none; overflow:visible; }
-.bt-trail__path{
-  fill:none; stroke:var(--red); stroke-width:4; stroke-linecap:round;
-  stroke-dasharray:2 15; opacity:.75; animation:trail-march 22s linear infinite;
-}
-@keyframes trail-march{ to{ stroke-dashoffset:-340; } }
-
-/* full-width bands; tints blend at the seams so it reads as one journey */
-.biome{ position:relative; overflow:hidden; isolation:isolate; }
-.biome--city{   background:linear-gradient(180deg,var(--biome-city) 0%,   var(--biome-city) 55%,   var(--biome-jungle) 100%); }
-.biome--jungle{ background:linear-gradient(180deg,var(--biome-jungle) 0%, var(--biome-jungle) 55%, var(--biome-desert) 100%); }
-.biome--desert{ background:linear-gradient(180deg,var(--biome-desert) 0%, var(--biome-desert) 55%, var(--biome-sea) 100%); }
-.biome--sea{    background:linear-gradient(180deg,var(--biome-sea) 0%,    #cfeaf0 100%); }
-
-.biome__scenery{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
-.biome__scenery-svg{ position:absolute; inset:0; width:100%; height:100%; }
-
-.biome__inner{ position:relative; z-index:4; width:min(560px,92vw); margin:0 auto; padding:52px 0 60px; }
-.biome__head{ text-align:left; }
-.biome__eyebrow{
-  font-weight:700; letter-spacing:.16em; text-transform:uppercase;
-  font-size:.72rem; color:var(--red-strong); margin-bottom:.4rem;
-}
-.biome__title{ font-size:clamp(1.7rem,4.5vw,2.5rem); color:var(--heading); }
-
-/* stop = ball + card */
-.biome-stop{ display:flex; flex-direction:column; align-items:stretch; gap:20px; margin-top:1.3rem; }
-.biome-ball{
-  display:flex; flex-direction:column; align-items:center; gap:8px; align-self:center;
-  transition:margin-bottom .42s ease;
-}
-.biome__inner--right .biome-ball{ transform:translateX(22%); }
-.biome__inner--left  .biome-ball{ transform:translateX(-22%); }
-.biome-ball__caption{
-  font-family:var(--serif); font-weight:600; font-size:1rem; color:var(--heading);
-  background:rgba(253,253,251,.82); padding:2px 12px; border-radius:999px;
+.route-trail{
+  position:relative;
+  --ball:92px; --cw:430px; --bh:780px;
+  --ballX:22%; --cardX:calc(22% + 88px);
+  --cy:50%; --cty:-34%;
 }
 
-/* poké-ball control */
-.pokeball{ appearance:none; background:transparent; border:0; padding:6px; cursor:pointer; border-radius:999px; line-height:0; }
-.pokeball__vis{ position:relative; display:block; width:var(--pb-size); height:var(--pb-size); filter:drop-shadow(0 10px 16px rgba(42,47,54,.26)); transition:transform .25s ease; }
-.pokeball:hover .pokeball__vis{ transform:translateY(-3px) scale(1.03); }
-.pokeball__half{ position:absolute; left:0; right:0; height:52%; }
-.pokeball__half--top{ top:0; background:linear-gradient(160deg,#f0605f,var(--red)); border-radius:calc(var(--pb-size)/2) calc(var(--pb-size)/2) 8px 8px; transition:transform .45s cubic-bezier(.34,1.56,.64,1); }
-.pokeball__half--bottom{ bottom:0; background:linear-gradient(20deg,#efefe8,var(--cream)); border-radius:8px 8px calc(var(--pb-size)/2) calc(var(--pb-size)/2); transition:transform .45s cubic-bezier(.34,1.56,.64,1); }
-.pokeball__band{ position:absolute; left:0; right:0; top:calc(50% - 5px); height:10px; background:var(--charcoal); border-radius:5px; z-index:2; transition:opacity .2s ease; }
-.pokeball__btn{ position:absolute; z-index:3; top:50%; left:50%; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%; background:var(--cream); border:5px solid var(--charcoal); transition:opacity .2s ease; }
-.pokeball:hover .pokeball__btn{ box-shadow:0 0 0 4px rgba(226,75,74,.25); }
-.pokeball__flash{ position:absolute; z-index:4; top:50%; left:50%; width:54px; height:54px; margin:-27px 0 0 -27px; border-radius:50%; pointer-events:none; opacity:0; background:radial-gradient(circle,#fff 0%, rgba(255,244,214,.9) 40%, rgba(255,244,214,0) 70%); }
+@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+@keyframes pulse{ 0%,100%{ transform:scale(1); opacity:.55; } 50%{ transform:scale(1.5); opacity:0; } }
 
-/* open: halves split + light flash */
-.biome-stop.is-open .biome-ball{ margin-bottom:48px; }
-.biome-stop.is-open .pokeball__half--top{ transform:translateY(-46%) rotate(-8deg); }
-.biome-stop.is-open .pokeball__half--bottom{ transform:translateY(56%) rotate(8deg); }
-.biome-stop.is-open .pokeball__band,
-.biome-stop.is-open .pokeball__btn{ opacity:0; }
-.biome-stop.is-open .pokeball__flash{ animation:flash .5s ease-out; }
-@keyframes flash{ 0%{opacity:0;transform:scale(.3)} 25%{opacity:1} 100%{opacity:0;transform:scale(3.4)} }
+.rt-band{ position:relative; height:var(--bh); overflow:hidden; isolation:isolate; }
+.rt-band--city{   background:linear-gradient(180deg,var(--biome-city) 0%,   var(--biome-city) 55%,   var(--biome-jungle) 100%); }
+.rt-band--jungle{ background:linear-gradient(180deg,var(--biome-jungle) 0%, var(--biome-jungle) 55%, var(--biome-desert) 100%); }
+.rt-band--desert{ background:linear-gradient(180deg,var(--biome-desert) 0%, var(--biome-desert) 55%, var(--biome-sea) 100%); }
+.rt-band--sea{    background:linear-gradient(180deg,var(--biome-sea) 0%,    #cfeaf0 100%); }
 
-/* card reveal (animated height) */
-.biome-card-slot{ display:flex; width:100%; }
-.biome-card{ display:grid; grid-template-rows:0fr; width:100%; opacity:0; transition:grid-template-rows .42s ease, opacity .3s ease; }
-.biome-stop.is-open .biome-card{ grid-template-rows:1fr; opacity:1; }
-.biome-card__inner{ overflow:hidden; }
-.biome-card__panel{ background:var(--cream); border:1px solid rgba(12,39,64,.09); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; text-align:left; }
-.biome-card__panel.is-featured{ border-color:rgba(226,75,74,.55); }
-.biome-card__kicker{ display:flex; align-items:center; gap:8px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; font-size:.68rem; color:var(--red-strong); margin-bottom:.5rem; }
-.biome-card__title{ font-size:1.4rem; color:var(--heading); margin-bottom:.5rem; }
-.biome-card__desc{ color:var(--body); margin-bottom:.4rem; }
+.rt-scenery{ position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+.rt-scenery .biome__scenery-svg{ position:absolute; inset:0; width:100%; height:100%; }
+.rt-trailsvg{ position:absolute; inset:0; width:100%; height:100%; z-index:2; }
 
-/* sub-projects list (desert biome) */
-.subquests{ list-style:none; display:grid; gap:12px; margin-top:.8rem; }
-.subquest{ padding-top:12px; border-top:1px solid rgba(12,39,64,.09); }
-.subquest:first-child{ border-top:0; padding-top:0; }
-.subquest__head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-.subquest__head h5{ font-size:1.02rem; color:var(--heading); font-weight:600; }
-.subquest__head a{ font-size:.82rem; font-weight:600; color:var(--red-strong); text-decoration:none; white-space:nowrap; }
-.subquest__head a:hover{ text-decoration:underline; }
-.subquest__desc{ font-size:.9rem; margin-top:2px; }
-.subquest .pills{ margin:.5rem 0 0; }
+.rt-flow{ display:contents; }
 
-/* pills + link buttons */
-.pills{ display:flex; flex-wrap:wrap; gap:8px; list-style:none; margin:.9rem 0 1rem; }
-.pill{ font-size:.75rem; font-weight:600; line-height:1; padding:6px 11px; border-radius:999px; white-space:nowrap; border:1px solid; }
-.pill--blue{ color:var(--pill-blue-tx); background:var(--pill-blue-bg); border-color:var(--pill-blue-bd); }
-.pill--red{ color:var(--pill-red-tx); background:var(--pill-red-bg); border-color:var(--pill-red-bd); }
-.pill--green{ color:var(--pill-green-tx); background:var(--pill-green-bg); border-color:var(--pill-green-bd); }
-.links{ display:flex; flex-wrap:wrap; gap:10px; }
-.link-btn{ display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:8px 16px; border-radius:999px; font-weight:600; font-size:.9rem; text-decoration:none; transition:transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease; }
-.link-btn--primary{ background:var(--red-strong); color:#fff; }
-.link-btn--primary:hover{ background:var(--red-hover); transform:translateY(-2px); }
-.link-btn--ghost{ border:2px solid rgba(12,39,64,.2); color:var(--heading); }
-.link-btn--ghost:hover{ border-color:var(--red); color:var(--red-strong); transform:translateY(-2px); }
+.rt-label{
+  position:absolute; top:26px; left:var(--cardX); z-index:5;
+  display:inline-flex; align-items:center; gap:9px; padding:7px 14px; border-radius:999px;
+  background:rgba(255,255,255,.85); border:1px solid rgba(12,39,64,.10);
+  font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#35506A;
+}
+
+.rt-ball{ position:absolute; left:var(--ballX); top:50%; transform:translate(-50%,-50%); z-index:7; }
+
+.rt-card{
+  position:absolute; left:var(--cardX); top:var(--cy); width:var(--cw); z-index:8;
+  visibility:var(--vis,hidden); opacity:var(--o,0); transform-origin:50% 0%;
+  transform:translate(0,var(--cty)) perspective(1000px) rotateX(calc((1 - var(--o,0)) * -74deg)) scale(calc(.97 + var(--o,0) * .03));
+  transition:opacity .34s ease-out, transform .58s cubic-bezier(.26,1.12,.34,1), visibility .34s;
+}
+.rt-card__panel{
+  background:var(--cream); border:1px solid rgba(12,39,64,.10); border-radius:20px;
+  box-shadow:0 26px 50px -22px rgba(12,39,64,.38); padding:26px 28px 24px;
+}
+
+/* single traveling node marker */
+.rt-marker{ position:absolute; left:0; top:0; width:0; height:0; z-index:9; opacity:0; transition:opacity .4s ease; will-change:transform; }
+
+/* =====================================================================
+   PROJECTS — mobile: single-column, card folds open in flow (no clipping)
+   ===================================================================== */
+@media (max-width:767px){
+  .route-trail{ --ball:60px; --cw:100%; }
+  .rt-band{ height:auto; min-height:0; overflow:visible; }
+  .rt-flow{
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+    position:relative; z-index:6; padding:70px 7% 44px;
+  }
+  .rt-label{ position:static; }
+  .rt-ball{ position:static; transform:none; }
+  .rt-card{
+    position:static; width:100%; visibility:visible; transform:none;
+    display:grid; grid-template-rows:0fr; opacity:0;
+    transition:grid-template-rows .42s ease, opacity .3s ease;
+  }
+  .rt-band.is-open .rt-card{ grid-template-rows:1fr; opacity:1; }
+  .rt-card__panel{ overflow:hidden; }
+}
 
 /* =====================================================================
    ABOUT
@@ -270,28 +234,7 @@ a{ color:inherit; }
 .site-footer a:hover{ text-decoration:underline; }
 
 /* =====================================================================
-   DESKTOP LAYOUT — winding trail, biomes alternate sides
-   ===================================================================== */
-@media (min-width:768px){
-  .biome__inner{ width:min(1120px,92vw); min-height:440px; padding:0; }
-  /* title sits on the ball's side, opposite the card, so they never overlap */
-  .biome__head{ position:absolute; top:56px; left:0; right:0; }
-  .biome__inner--right .biome__head{ text-align:right; }
-  .biome__inner--left  .biome__head{ text-align:left; }
-
-  .biome-stop{ position:absolute; inset:0; display:block; margin-top:0; }
-  .biome-ball{ position:absolute; top:50%; transform:translateY(-50%); }
-  .biome__inner--right .biome-ball{ right:3%; left:auto; transform:translateY(-50%); }
-  .biome__inner--left  .biome-ball{ left:3%; right:auto; transform:translateY(-50%); }
-  .biome-stop.is-open .biome-ball{ margin-bottom:0; }
-
-  .biome-card-slot{ position:absolute; top:0; bottom:0; width:min(430px,44%); align-items:center; }
-  .biome__inner--right .biome-card-slot{ left:5%; right:auto; }
-  .biome__inner--left  .biome-card-slot{ right:5%; left:auto; }
-}
-
-/* =====================================================================
-   RESPONSIVE (shared)
+   RESPONSIVE (nav)
    ===================================================================== */
 @media (max-width:620px){
   .section{ padding:4rem 0; }
@@ -300,14 +243,9 @@ a{ color:inherit; }
 }
 
 /* =====================================================================
-   REDUCED MOTION
+   REDUCED MOTION — no scroll-driven travel, no flourish; static reveals
    ===================================================================== */
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *,*::before,*::after{ animation:none!important; transition-duration:.001ms!important; }
-  .hero__ball-bob{ animation:none!important; }
-  .bt-trail__path{ animation:none!important; }
-  .pokeball__flash{ display:none!important; }
-  .biome-stop.is-open .pokeball__half--top{ transform:translateY(-46%); }
-  .biome-stop.is-open .pokeball__half--bottom{ transform:translateY(56%); }
 }
