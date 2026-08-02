@@ -1,40 +1,67 @@
-// Layered skyline: hazy far row, mid row, detailed front row with window grids,
-// a faint sun, and drifting clouds (HTML, animated only while in view).
-const front = [
-  { x: 10, w: 116, h: 176 }, { x: 150, w: 84, h: 236 }, { x: 258, w: 104, h: 150 },
-  { x: 386, w: 74, h: 262 }, { x: 500, w: 120, h: 196 }, { x: 660, w: 68, h: 246 },
-  { x: 760, w: 110, h: 168 }, { x: 900, w: 86, h: 250 }, { x: 1020, w: 122, h: 204 },
+// Original layered skyline: hazy far row, mid row, detailed front row with
+// window grids + rooftop details (water tanks, antennas, setbacks), soft sun
+// atmosphere, and drifting clouds (HTML, animated only while in view).
+const far = [
+  [20, 150, 60], [92, 116, 44], [150, 168, 70], [232, 96, 40], [292, 150, 62],
+  [368, 120, 52], [520, 140, 58], [592, 100, 44], [700, 156, 66], [788, 124, 50],
+  [900, 150, 60], [980, 110, 46], [1064, 160, 70], [1146, 128, 54],
 ];
+const mid = [
+  [40, 176, 96], [210, 150, 84], [372, 190, 90], [560, 158, 92], [742, 182, 88], [920, 150, 96], [1074, 176, 100],
+];
+const front = [
+  { x: 6, w: 110, h: 210, roof: 'tank' }, { x: 132, w: 82, h: 262, roof: 'antenna' },
+  { x: 232, w: 104, h: 168, roof: 'setback' }, { x: 356, w: 76, h: 274, roof: 'antenna' },
+  { x: 452, w: 118, h: 200, roof: 'tank' }, { x: 596, w: 70, h: 250, roof: 'flat' },
+  { x: 690, w: 108, h: 176, roof: 'setback' }, { x: 820, w: 88, h: 258, roof: 'tank' },
+  { x: 930, w: 120, h: 208, roof: 'antenna' }, { x: 1074, w: 100, h: 240, roof: 'flat' },
+];
+const BASE = 380;
+
+function Roof({ b }) {
+  const top = BASE - b.h;
+  if (b.roof === 'tank') return <rect x={b.x + b.w * 0.3} y={top - 16} width={b.w * 0.32} height="16" rx="3" fill="#7d97b2" />;
+  if (b.roof === 'antenna') return (
+    <g>
+      <line x1={b.x + b.w / 2} y1={top} x2={b.x + b.w / 2} y2={top - 28} stroke="#7d97b2" strokeWidth="3" />
+      <circle cx={b.x + b.w / 2} cy={top - 30} r="3" fill="#d16d76" />
+    </g>
+  );
+  if (b.roof === 'setback') return <rect x={b.x + b.w * 0.2} y={top - 20} width={b.w * 0.6} height="20" fill="#8ea8c1" />;
+  return null;
+}
 
 export default function CityScenery() {
   return (
     <>
-      <svg className="biome__scenery-svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice">
+      <svg className="biome__scenery-svg" viewBox="0 0 1200 380" preserveAspectRatio="xMidYMax slice">
         <defs>
           <pattern id="cityWinBack" width="18" height="24" patternUnits="userSpaceOnUse">
-            <rect x="5" y="6" width="7" height="10" fill="#ffffff" opacity="0.28" />
+            <rect x="5" y="6" width="7" height="10" fill="#ffffff" opacity="0.24" />
           </pattern>
           <pattern id="cityWin" width="16" height="21" patternUnits="userSpaceOnUse">
-            <rect x="3" y="4" width="7" height="10" fill="#ffffff" opacity="0.55" />
+            <rect x="3" y="4" width="6.5" height="10" fill="#ffffff" opacity="0.5" />
+            <rect x="10" y="4" width="1.5" height="10" fill="#6f89a3" opacity="0.25" />
           </pattern>
+          <radialGradient id="citySun" cx="0.82" cy="0.12" r="0.5">
+            <stop offset="0" stopColor="#ffffff" stopOpacity="0.7" />
+            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        <circle cx="985" cy="66" r="52" fill="#ffffff" opacity="0.42" />
+        <rect x="0" y="0" width="1200" height="380" fill="url(#citySun)" />
 
-        {/* far, hazy row */}
-        <g fill="#b7c7d8" opacity="0.5">
-          <rect x="30" y="150" width="90" height="210" /><rect x="130" y="112" width="66" height="248" />
-          <rect x="350" y="140" width="82" height="220" /><rect x="470" y="102" width="60" height="258" />
-          <rect x="700" y="150" width="82" height="210" /><rect x="880" y="120" width="72" height="240" />
-          <rect x="1050" y="150" width="92" height="210" />
+        {/* far hazy skyline */}
+        <g fill="#b6c6d7" opacity="0.5">
+          {far.map(([x, h, w], i) => <rect key={i} x={x} y={BASE - h} width={w} height={h} />)}
         </g>
 
         {/* mid row with faint windows */}
         <g>
-          {[[196, 172, 96], [560, 150, 92], [812, 182, 82]].map(([x, y, w]) => (
-            <g key={x}>
-              <rect x={x} y={y} width={w} height={360 - y} fill="#a4b9cd" />
-              <rect x={x} y={y} width={w} height={360 - y} fill="url(#cityWinBack)" />
+          {mid.map(([x, h, w], i) => (
+            <g key={i}>
+              <rect x={x} y={BASE - h} width={w} height={h} fill="#a4b9cd" />
+              <rect x={x} y={BASE - h} width={w} height={h} fill="url(#cityWinBack)" />
             </g>
           ))}
         </g>
@@ -43,19 +70,17 @@ export default function CityScenery() {
         <g>
           {front.map((b) => (
             <g key={b.x}>
-              <rect x={b.x} y={360 - b.h} width={b.w} height={b.h} fill="#8ea8c1" />
-              <rect x={b.x} y={360 - b.h} width={b.w} height={b.h} fill="url(#cityWin)" />
-              <rect x={b.x} y={360 - b.h} width={b.w} height="4" fill="#7d97b2" />
+              <Roof b={b} />
+              <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill="#8ea8c1" />
+              <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill="url(#cityWin)" />
+              <rect x={b.x} y={BASE - b.h} width={b.w} height="4" fill="#7d97b2" />
             </g>
           ))}
         </g>
-
-        {/* street haze */}
-        <rect x="0" y="336" width="1200" height="24" fill="#9db3c8" opacity="0.5" />
       </svg>
 
       <div className="rt-cloud rt-cloud--a" style={{ top: '12%', left: '-170px', width: '150px', height: '30px' }} />
-      <div className="rt-cloud rt-cloud--b" style={{ top: '25%', left: '-150px', width: '104px', height: '24px', opacity: 0.6 }} />
+      <div className="rt-cloud rt-cloud--b" style={{ top: '22%', left: '-150px', width: '104px', height: '24px', opacity: 0.6 }} />
     </>
   );
 }
