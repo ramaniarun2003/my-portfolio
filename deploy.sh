@@ -27,7 +27,7 @@ echo "==> Building production bundle"
 npm run build
 
 echo "==> Syncing dist/ to s3://${S3_BUCKET}"
-aws s3 sync dist/ "s3://${S3_BUCKET}" --delete
+aws s3 sync dist/ "s3://${S3_BUCKET}" --delete --exclude "*.DS_Store"
 
 if [[ -n "${CLOUDFRONT_DISTRIBUTION_ID}" ]]; then
   echo "==> Invalidating CloudFront cache (${CLOUDFRONT_DISTRIBUTION_ID})"
