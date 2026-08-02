@@ -1,21 +1,27 @@
-import ProjectCard from './ProjectCard';
-import { projects } from '../data/projects';
+import { useMemo, useRef, createRef } from 'react';
+import { biomes } from '../data/biomes';
+import { useTrail } from '../hooks/useTrail';
+import Trail from './biomes/Trail';
+import Biome from './biomes/Biome';
 
+// The Projects section IS the biome trail: one continuous route winding
+// top-to-bottom through four full-width biomes, a poké-ball on each.
 export default function Projects() {
+  const containerRef = useRef(null);
+  const ballRefs = useMemo(() => biomes.map(() => createRef()), []);
+  const path = useTrail(containerRef, ballRefs);
+
   return (
-    <section id="projects" className="section team">
-      <div className="container">
-        <p className="section__eyebrow">Gotta build 'em all</p>
-        <h2 className="section__title">My project team</h2>
-        <p className="section__lead">
-          Each project is a teammate I've caught along the way. Open a poké-ball to meet one.
-        </p>
-        <div className="team__grid">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      </div>
+    <section
+      id="projects"
+      className="biome-trail"
+      ref={containerRef}
+      aria-label="Projects — a route through four biomes"
+    >
+      <Trail path={path} />
+      {biomes.map((biome, i) => (
+        <Biome key={biome.id} biome={biome} ballRef={ballRefs[i]} />
+      ))}
     </section>
   );
 }
