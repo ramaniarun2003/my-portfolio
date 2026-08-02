@@ -3,7 +3,7 @@ import Hero from './components/Hero';
 import Projects from './components/Projects';
 import About from './components/About';
 import Contact from './components/Contact';
-import './index.css';
+import Footer from './components/Footer';
 
 export default function App() {
   return (
@@ -14,12 +14,7 @@ export default function App() {
       <Projects />
       <About />
       <Contact />
-      <footer className="site-footer">
-        <div className="container">
-          Built by Ramani Arunachalam · original art, no trademarked characters ·{' '}
-          <a href="mailto:ramaniarun2003@gmail.com">ramaniarun2003@gmail.com</a>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

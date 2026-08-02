@@ -1,4 +1,4 @@
-const badges = ['java', 'python', 'html5', 'css3', 'aws', 'github'];
+import { skillBadges } from '../data/skills';
 
 export default function About() {
   return (
@@ -16,7 +16,7 @@ export default function About() {
           scale-to-zero on Google Cloud Run.
         </p>
         <div className="about-badges" aria-label="Tools I work with">
-          {badges.map((tech) => (
+          {skillBadges.map((tech) => (
             <img key={tech} src={`img/${tech}.png`} alt={tech} className="about-badge" />
           ))}
         </div>
