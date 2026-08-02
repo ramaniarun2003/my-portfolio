@@ -4,13 +4,19 @@ import TrailPath from './TrailPath';
 import Pokeball from './Pokeball';
 import BiomeCard from './BiomeCard';
 import { useInView } from '../../hooks/useInView';
+import { useAutoOpen } from '../../hooks/useAutoOpen';
 
 // One full-width biome band: scenery + its weaving trail segment + the openable
 // ball (at this biome's node side) and the card that folds out of it on the
-// opposite side. Open state is exposed to descendants via --o / --f / --vis.
-export default function Biome({ biome, open, flash, bob, onOpen, onClose }) {
+// opposite side. The chapter opens automatically as the ball scrolls into view
+// (auto), and click/keyboard remain a fallback. Open state → --o / --f / --vis.
+export default function Biome({ biome, open, flash, bob, auto, onOpen, onClose }) {
   const ref = useRef(null);
+  const ballRef = useRef(null);
   const inView = useInView(ref);
+
+  // Scroll-triggered auto-open (disabled under reduced-motion / no IO).
+  useAutoOpen(ballRef, onOpen, auto);
 
   const vars = {
     '--o': open ? 1 : 0,
@@ -37,6 +43,7 @@ export default function Biome({ biome, open, flash, bob, onOpen, onClose }) {
       <div className="rt-flow">
         <div className="rt-label" style={{ color: biome.labelColor }}>{biome.label}</div>
         <Pokeball
+          ref={ballRef}
           open={open}
           controls={`card-${biome.id}`}
           ariaLabel={`${open ? 'Close' : 'Open'} chapter: ${biome.card.title}`}
