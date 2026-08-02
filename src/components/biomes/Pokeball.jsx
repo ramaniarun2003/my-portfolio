@@ -1,10 +1,11 @@
-import { useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 
-// An original poké-ball-style sphere that genuinely OPENS in 3D: the top
-// hemisphere is hinged at the back rim and tilts up-and-back (rotateX under
-// perspective), revealing a shadowed inner cavity with a burst of light. All
-// driven by the --o (0→1 open) and --f (flash) custom properties on the band.
-export default function Pokeball({ open, controls, ariaLabel, onOpen, onClose }) {
+// An original poké-ball-style sphere. Closed it's front-facing; open it renders
+// in a side / 3-quarter view (lid hinged up, bowl you see into, light bursting
+// out), driven by the --o (0→1 open) and --f (flash) custom properties.
+// The button ref is forwarded so a scroll observer can auto-open it. It stays a
+// real focusable button (aria-expanded) so click/Enter/Space remain a fallback.
+const Pokeball = forwardRef(function Pokeball({ open, controls, ariaLabel, onOpen, onClose }, ref) {
   const sphereRef = useRef(null);
 
   const handleClick = () => {
@@ -26,6 +27,7 @@ export default function Pokeball({ open, controls, ariaLabel, onOpen, onClose })
 
   return (
     <button
+      ref={ref}
       type="button"
       className="rt-ball"
       onClick={handleClick}
@@ -55,4 +57,6 @@ export default function Pokeball({ open, controls, ariaLabel, onOpen, onClose })
       <span className="sr-only">{ariaLabel}</span>
     </button>
   );
-}
+});
+
+export default Pokeball;
