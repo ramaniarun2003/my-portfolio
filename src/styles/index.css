@@ -225,63 +225,97 @@ a{ color:inherit; }
 /* ---------- 3D opening sphere ---------- */
 .rt-ball__sphere{
   position:relative; display:block; width:var(--ball); height:var(--ball);
-  perspective:640px; transform-style:preserve-3d;
   animation:bob var(--bob,6s) ease-in-out infinite;
 }
 .rt-ball__shadow{ position:absolute; left:8%; bottom:-14%; width:84%; height:16%; border-radius:50%; background:rgba(12,39,64,.20); filter:blur(6px); }
-/* faint releasing beam projecting up and out */
-.rt-ball__beam{
-  position:absolute; left:32%; right:32%; bottom:48%; height:150%; pointer-events:none; transform-origin:50% 100%;
-  background:linear-gradient(0deg, rgba(255,252,235,.85) 0%, rgba(150,222,255,.32) 45%, rgba(255,255,255,0) 90%);
-  filter:blur(5px); opacity:calc(var(--o,0) * .5); transform:translateZ(-8px) scaleY(calc(.35 + var(--o,0) * .65));
-  transition:opacity .5s ease, transform .55s ease;
-}
-/* THE STAR: brilliant white / energy glow bursting from the opening */
+
+/* ---------- light burst — the hero of the open moment (shared) ---------- */
 .rt-ball__glow{
-  position:absolute; inset:-42%; border-radius:50%; pointer-events:none;
-  background:radial-gradient(circle, rgba(255,255,255,.98) 0%, rgba(255,244,206,.72) 26%, rgba(150,222,255,.42) 52%, rgba(150,222,255,0) 72%);
+  position:absolute; inset:-42%; border-radius:50%; pointer-events:none; z-index:1;
+  background:radial-gradient(circle at 50% 42%, rgba(255,255,255,.98) 0%, rgba(255,244,206,.72) 26%, rgba(150,222,255,.42) 52%, rgba(150,222,255,0) 72%);
   opacity:calc(var(--o,0) * .9 + var(--f,0) * .1);
-  transform:translateZ(-6px) scale(calc(.42 + var(--o,0) * .48 + var(--f,0) * .5));
+  transform:scale(calc(.42 + var(--o,0) * .48 + var(--f,0) * .5));
   transition:opacity .45s ease-out, transform .45s ease-out;
 }
-/* thin light rays / sparkle burst */
-.rt-ball__rays{
-  position:absolute; inset:-16%; border-radius:50%; pointer-events:none;
-  background:repeating-conic-gradient(from 0deg, rgba(255,252,235,0) 0deg 13deg, rgba(255,252,235,.6) 14deg 15.5deg, rgba(255,252,235,0) 16.5deg 26deg);
-  -webkit-mask:radial-gradient(circle, #000 26%, rgba(0,0,0,.35) 44%, transparent 60%);
-  mask:radial-gradient(circle, #000 26%, rgba(0,0,0,.35) 44%, transparent 60%);
-  opacity:calc(var(--o,0) * .8); transform:translateZ(-4px) scale(calc(.6 + var(--o,0) * .5));
-  transition:opacity .4s ease, transform .5s ease;
+.rt-ball__beam{
+  position:absolute; left:34%; right:34%; bottom:46%; height:150%; pointer-events:none; transform-origin:50% 100%; z-index:2;
+  background:linear-gradient(0deg, rgba(255,252,235,.85) 0%, rgba(150,222,255,.32) 45%, rgba(255,255,255,0) 90%);
+  filter:blur(5px); opacity:calc(var(--o,0) * .5); transform:scaleY(calc(.35 + var(--o,0) * .65));
+  transition:opacity .5s ease, transform .55s ease;
 }
-/* bright energy core seen inside the opened ball */
+
+/* ---------- OPEN 3/4 view: lid hinged up + bowl you see into (fade in) ---- */
+/* red top shell, flipped up and back like a lid */
+.rt-ball__lid{
+  position:absolute; left:11%; right:11%; top:-8%; height:48%; z-index:3;
+  opacity:var(--o,0);
+  transform:translateY(calc((1 - var(--o,0)) * 32%)) rotate(-2deg);
+  transition:opacity .4s ease, transform .55s cubic-bezier(.32,1.1,.34,1);
+}
+.rt-ball__lid::before{ /* dome outer (top of the lid) */
+  content:""; position:absolute; inset:0; border-radius:50% 50% 46% 46% / 66% 66% 34% 34%;
+  background:linear-gradient(180deg,#F0605F 0%, #C43C3B 100%); box-shadow:0 5px 9px -4px rgba(12,39,64,.45);
+}
+.rt-ball__lid::after{ /* concave underside of the lid, facing the bowl */
+  content:""; position:absolute; left:16%; right:16%; bottom:2%; height:52%; border-radius:50%;
+  background:radial-gradient(ellipse at 50% 24%, #C34440 0%, #8f2f2a 82%); box-shadow:inset 0 4px 7px rgba(0,0,0,.32);
+}
+/* white base seen at an angle — a shallow bowl */
+.rt-ball__bowl{
+  position:absolute; left:5%; right:5%; bottom:3%; height:60%; z-index:4;
+  opacity:var(--o,0); transition:opacity .4s ease;
+  border-radius:46% 46% 48% 48% / 24% 24% 76% 76%;
+  background:linear-gradient(180deg,#FDFDFB 0%, #EAE4D8 100%);
+  box-shadow:inset 0 -5px 10px rgba(0,0,0,.08), 0 7px 13px -6px rgba(12,39,64,.4);
+}
+/* dark concave interior you look into */
+.rt-ball__cavity{
+  position:absolute; left:15%; right:15%; top:26%; height:30%; z-index:5;
+  opacity:var(--o,0); transition:opacity .4s ease; border-radius:50%;
+  background:radial-gradient(ellipse at 50% 22%, #7a5a4d 0%, #4a352e 55%, #2c1f1a 100%);
+  box-shadow:inset 0 5px 9px rgba(0,0,0,.5);
+}
+/* red rim around the bowl opening */
+.rt-ball__rim{
+  position:absolute; left:10%; right:10%; top:22%; height:38%; z-index:6;
+  opacity:var(--o,0); transition:opacity .4s ease; border-radius:50%;
+  border:4px solid #E24B4A; box-shadow:0 2px 3px -1px rgba(12,39,64,.35);
+}
+/* bright light pooling at / rising from the opening */
 .rt-ball__core{
-  position:absolute; inset:18%; border-radius:50%; pointer-events:none;
-  background:radial-gradient(circle at 50% 42%, #ffffff 0%, #fff2c2 46%, rgba(255,214,140,0) 78%);
-  opacity:var(--o,0); transform:translateZ(-2px) scale(calc(.4 + var(--o,0) * .8));
+  position:absolute; left:19%; right:19%; top:12%; height:38%; z-index:7; pointer-events:none; border-radius:50%;
+  background:radial-gradient(circle at 50% 60%, #ffffff 0%, #fff2c2 44%, rgba(255,214,140,0) 78%);
+  opacity:var(--o,0); transform:scale(calc(.5 + var(--o,0) * .6));
   transition:opacity .4s ease, transform .5s cubic-bezier(.3,1.2,.4,1);
 }
-/* bottom shell — white poké-ball base, stays put (slight forward tilt) */
-.rt-ball__bottom{
-  position:absolute; left:0; bottom:0; width:100%; height:50%; border-radius:0 0 999px 999px;
+.rt-ball__rays{
+  position:absolute; left:-6%; right:-6%; top:-24%; height:90%; z-index:8; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg at 50% 60%, rgba(255,252,235,0) 0deg 13deg, rgba(255,252,235,.6) 14deg 15.5deg, rgba(255,252,235,0) 16.5deg 26deg);
+  -webkit-mask:radial-gradient(circle at 50% 60%, #000 20%, rgba(0,0,0,.35) 42%, transparent 58%);
+  mask:radial-gradient(circle at 50% 60%, #000 20%, rgba(0,0,0,.35) 42%, transparent 58%);
+  opacity:calc(var(--o,0) * .8); transform:scale(calc(.6 + var(--o,0) * .5));
+  transition:opacity .4s ease, transform .5s ease;
+}
+.rt-ball__seam{
+  position:absolute; z-index:9; left:14%; right:14%; top:30%; height:14%; border-radius:50%; pointer-events:none;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,.98), rgba(255,244,206,.5) 45%, rgba(150,222,255,0) 75%);
+  opacity:calc(var(--o,0) * .8 + var(--f,0) * .2); filter:blur(1px); transition:opacity .4s ease;
+}
+
+/* ---------- CLOSED front-facing halves (fade out with --o) ---------- */
+.rt-ball__c-top{
+  position:absolute; z-index:10; left:0; top:0; width:100%; height:50%; border-radius:999px 999px 6px 6px;
+  background:linear-gradient(160deg,#F0827F 0%, #E24B4A 62%); box-shadow:inset 0 2px 6px rgba(255,255,255,.45);
+  opacity:calc(1 - var(--o,0)); transition:opacity .25s ease;
+}
+.rt-ball__c-bottom{
+  position:absolute; z-index:10; left:0; bottom:0; width:100%; height:50%; border-radius:6px 6px 999px 999px;
   background:linear-gradient(20deg,#EDE8DE 0%, #FDFDFB 60%); box-shadow:inset 0 -3px 6px rgba(0,0,0,.05);
-  transform-origin:50% 0%; transform:rotateX(calc(var(--o,0) * 12deg)); transition:transform .6s cubic-bezier(.32,1.1,.34,1);
+  opacity:calc(1 - var(--o,0)); transition:opacity .25s ease;
 }
-.rt-ball__bottom::before{ content:""; position:absolute; left:8%; right:8%; top:0; height:26%; border-radius:50%; background:linear-gradient(180deg, rgba(226,75,74,.28), rgba(226,75,74,0)); opacity:var(--o,0); transition:opacity .5s ease; }
-.rt-ball__band{ position:absolute; left:0; top:calc(50% - 5%); width:100%; height:10%; background:#2A2F36; border-radius:2px; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
-.rt-ball__btn{ position:absolute; z-index:2; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; background:#FDFDFB; border:3px solid #2A2F36; box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
-.rt-ball__pulse{ position:absolute; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; border:2px solid #E24B4A; box-sizing:border-box; opacity:calc(1 - var(--o,0)); animation:pulse 2.8s ease-out infinite; }
-/* top shell — RED dome, hinged at the back rim, tilts up & back in 3D */
-.rt-ball__top{
-  position:absolute; left:0; top:0; width:100%; height:50%; transform-style:preserve-3d;
-  transform-origin:50% 100%; transform:rotateX(calc(var(--o,0) * -122deg));
-  transition:transform .62s cubic-bezier(.32,1.1,.34,1);
-}
-.rt-ball__face{ position:absolute; inset:0; border-radius:999px 999px 0 0; backface-visibility:hidden; }
-.rt-ball__face--out{ background:linear-gradient(160deg,#F0827F 0%, #E24B4A 62%); box-shadow:inset 0 2px 6px rgba(255,255,255,.45); }
-/* underside of the red shell — shadowed RED, never black */
-.rt-ball__face--in{ background:linear-gradient(200deg,#CF4B47 0%, #A5322E 100%); box-shadow:inset 0 -4px 8px rgba(0,0,0,.22); transform:rotateX(180deg); }
-/* bright light spilling from the seam */
-.rt-ball__seam{ position:absolute; z-index:3; left:10%; right:10%; top:45%; height:14%; border-radius:50%; pointer-events:none; background:radial-gradient(ellipse at center, rgba(255,255,255,.98), rgba(255,244,206,.5) 45%, rgba(150,222,255,0) 75%); opacity:calc(var(--o,0) * .8 + var(--f,0) * .2); filter:blur(1px); transition:opacity .4s ease; }
+.rt-ball__band{ position:absolute; z-index:11; left:0; top:calc(50% - 5%); width:100%; height:10%; background:#2A2F36; border-radius:2px; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__btn{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; background:#FDFDFB; border:3px solid #2A2F36; box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__pulse{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; border:2px solid #E24B4A; box-sizing:border-box; opacity:calc(1 - var(--o,0)); animation:pulse 2.8s ease-out infinite; }
 
 /* card — folds out on the side OPPOSITE the ball */
 .rt-card{
