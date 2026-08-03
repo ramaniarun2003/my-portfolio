@@ -223,7 +223,7 @@ a{ color:inherit; }
   /* tier colour language — default: Poké Ball (red top, white base, black band) */
   --bt:#E24B4A; --bt2:#F0827F; --btd:#A5322E; --bacc:#E24B4A; --bd:#2A2F36; --bring:#2A2F36;
 }
-.rt-ball--ultra{   --bt:#F4B740; --bt2:#F8CE6B; --btd:#B5851F; --bacc:#2A2F36; --bd:#2A2F36; --bring:#2A2F36; }
+.rt-ball--ultra{   --bt:#F4C13A; --bt2:#F8D46B; --btd:#C99A2A; --bacc:#2A2F36; --bd:#2A2F36; --bring:#2A2F36; }
 .rt-ball--great{   --bt:#2C6FC4; --bt2:#4A8AD8; --btd:#1E4F8F; --bacc:#E24B4A; --bd:#2A2F36; --bring:#2A2F36; }
 .rt-ball--premier{ --bt:#FDFDFB; --bt2:#FFFFFF; --btd:#E4DED2; --bacc:#E24B4A; --bd:#E24B4A; --bring:#E24B4A; }
 
@@ -232,7 +232,12 @@ a{ color:inherit; }
 
 /* per-type accents on the closed top (Ultra black cap / Great red stripes) */
 .rt-ball__c-cap{ display:none; position:absolute; z-index:10; left:0; top:0; width:100%; opacity:calc(1 - var(--o,0)); transition:opacity .25s ease; pointer-events:none; }
-.rt-ball--ultra .rt-ball__c-cap{ display:block; height:27%; background:#2A2F36; border-radius:999px 999px 45% 45% / 999px 999px 70% 70%; }
+/* Ultra Ball: yellow-dominant top with two black wing stripes sweeping up the
+   sides from the band + a small black top notch (original art, not a black cap) */
+.rt-ball--ultra .rt-ball__c-cap{
+  display:block; height:50%; border-radius:999px 999px 6px 6px;
+  background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none'><g fill='%232A2F36'><path d='M32 50 L48 50 L28 15 L16 15 Z'/><path d='M68 50 L52 50 L72 15 L84 15 Z'/><path d='M46 13 L54 13 L50 5 Z'/></g></svg>") center/100% 100% no-repeat;
+}
 .rt-ball--great .rt-ball__c-cap{ display:block; height:40%; }
 .rt-ball--great .rt-ball__c-cap::before,
 .rt-ball--great .rt-ball__c-cap::after{ content:""; position:absolute; top:12%; width:8%; height:66%; background:#E24B4A; border-radius:5px; transform-origin:50% 0%; }
@@ -240,8 +245,11 @@ a{ color:inherit; }
 .rt-ball--great .rt-ball__c-cap::after{ right:39%; transform:rotate(-20deg); }
 
 /* per-type accent on the open lid (Ultra black cap; other tiers read by colour) */
-.rt-ball__lid-cap{ display:none; position:absolute; left:6%; right:6%; top:0; height:46%; pointer-events:none; }
-.rt-ball--ultra .rt-ball__lid-cap{ display:block; background:#2A2F36; border-radius:50% 50% 30% 30% / 88% 88% 34% 34%; }
+.rt-ball__lid-cap{ display:none; position:absolute; inset:0; pointer-events:none; }
+.rt-ball--ultra .rt-ball__lid-cap{
+  display:block; border-radius:50% 50% 46% 46% / 66% 66% 34% 34%;
+  background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none'><g fill='%232A2F36'><path d='M32 50 L48 50 L28 15 L16 15 Z'/><path d='M68 50 L52 50 L72 15 L84 15 Z'/><path d='M46 13 L54 13 L50 5 Z'/></g></svg>") center/100% 100% no-repeat;
+}
 
 /* ---------- 3D opening sphere ---------- */
 .rt-ball__sphere{
