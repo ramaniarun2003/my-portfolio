@@ -45,8 +45,9 @@ export default function Biome({ biome, open, flash, bob, auto, onOpen, onClose }
         <Pokeball
           ref={ballRef}
           open={open}
+          type={biome.type}
           controls={`card-${biome.id}`}
-          ariaLabel={`${open ? 'Close' : 'Open'} chapter: ${biome.card.title}`}
+          ariaLabel={`${open ? 'Close' : 'Open'} ${biome.ballName} — ${biome.card.title}`}
           onOpen={onOpen}
           onClose={onClose}
         />

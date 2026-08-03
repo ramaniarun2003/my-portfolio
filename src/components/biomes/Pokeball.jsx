@@ -1,11 +1,13 @@
 import { forwardRef, useRef } from 'react';
 
-// An original poké-ball-style sphere. Closed it's front-facing; open it renders
-// in a side / 3-quarter view (lid hinged up, bowl you see into, light bursting
-// out), driven by the --o (0→1 open) and --f (flash) custom properties.
-// The button ref is forwarded so a scroll observer can auto-open it. It stays a
+// One reusable poké-ball. `type` (poke | ultra | great | premier) swaps the
+// tier's colour language via CSS custom properties + a couple of per-type
+// accent overlays (Ultra black cap, Great red stripes) — no duplicated SVGs.
+// Closed it's front-facing; open it renders in a side / 3-quarter view (lid up,
+// bowl you see into, light burst), driven by --o (0→1 open) and --f (flash).
+// The button ref is forwarded so a scroll observer can auto-open it; it stays a
 // real focusable button (aria-expanded) so click/Enter/Space remain a fallback.
-const Pokeball = forwardRef(function Pokeball({ open, controls, ariaLabel, onOpen, onClose }, ref) {
+const Pokeball = forwardRef(function Pokeball({ open, type = 'poke', controls, ariaLabel, onOpen, onClose }, ref) {
   const sphereRef = useRef(null);
 
   const handleClick = () => {
@@ -29,7 +31,7 @@ const Pokeball = forwardRef(function Pokeball({ open, controls, ariaLabel, onOpe
     <button
       ref={ref}
       type="button"
-      className="rt-ball"
+      className={`rt-ball rt-ball--${type}`}
       onClick={handleClick}
       aria-expanded={open ? 'true' : 'false'}
       aria-controls={controls}
@@ -39,8 +41,8 @@ const Pokeball = forwardRef(function Pokeball({ open, controls, ariaLabel, onOpe
         {/* light burst */}
         <span className="rt-ball__glow" />
         <span className="rt-ball__beam" />
-        {/* open 3/4 view: lid up + bowl you see into */}
-        <span className="rt-ball__lid" />
+        {/* open 3/4 view: lid up (with type accent) + bowl you see into */}
+        <span className="rt-ball__lid"><span className="rt-ball__lid-cap" /></span>
         <span className="rt-ball__bowl" />
         <span className="rt-ball__cavity" />
         <span className="rt-ball__rim" />
@@ -49,10 +51,12 @@ const Pokeball = forwardRef(function Pokeball({ open, controls, ariaLabel, onOpe
         <span className="rt-ball__seam" />
         {/* closed front-facing halves (fade out when open) */}
         <span className="rt-ball__c-top" />
+        <span className="rt-ball__c-cap" />
         <span className="rt-ball__c-bottom" />
         <span className="rt-ball__band" />
         <span className="rt-ball__btn" />
         <span className="rt-ball__pulse" />
+        <span className="rt-ball__ring" />
       </span>
       <span className="sr-only">{ariaLabel}</span>
     </button>

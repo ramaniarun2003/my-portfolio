@@ -220,7 +220,28 @@ a{ color:inherit; }
 .rt-ball{
   position:absolute; left:var(--ballX); top:50%; transform:translate(-50%,-50%); z-index:7;
   appearance:none; border:0; background:transparent; padding:16px; cursor:pointer; border-radius:999px;
+  /* tier colour language — default: Poké Ball (red top, white base, black band) */
+  --bt:#E24B4A; --bt2:#F0827F; --btd:#A5322E; --bacc:#E24B4A; --bd:#2A2F36; --bring:#2A2F36;
 }
+.rt-ball--ultra{   --bt:#F4B740; --bt2:#F8CE6B; --btd:#B5851F; --bacc:#2A2F36; --bd:#2A2F36; --bring:#2A2F36; }
+.rt-ball--great{   --bt:#2C6FC4; --bt2:#4A8AD8; --btd:#1E4F8F; --bacc:#E24B4A; --bd:#2A2F36; --bring:#2A2F36; }
+.rt-ball--premier{ --bt:#FDFDFB; --bt2:#FFFFFF; --btd:#E4DED2; --bacc:#E24B4A; --bd:#E24B4A; --bring:#E24B4A; }
+
+/* subtle outline so every tier (incl. white Premier) reads on the sky palette */
+.rt-ball__ring{ position:absolute; z-index:13; inset:2%; border-radius:50%; border:2px solid rgba(12,39,64,.22); box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .25s ease; pointer-events:none; }
+
+/* per-type accents on the closed top (Ultra black cap / Great red stripes) */
+.rt-ball__c-cap{ display:none; position:absolute; z-index:10; left:0; top:0; width:100%; opacity:calc(1 - var(--o,0)); transition:opacity .25s ease; pointer-events:none; }
+.rt-ball--ultra .rt-ball__c-cap{ display:block; height:27%; background:#2A2F36; border-radius:999px 999px 45% 45% / 999px 999px 70% 70%; }
+.rt-ball--great .rt-ball__c-cap{ display:block; height:40%; }
+.rt-ball--great .rt-ball__c-cap::before,
+.rt-ball--great .rt-ball__c-cap::after{ content:""; position:absolute; top:12%; width:8%; height:66%; background:#E24B4A; border-radius:5px; transform-origin:50% 0%; }
+.rt-ball--great .rt-ball__c-cap::before{ left:39%; transform:rotate(20deg); }
+.rt-ball--great .rt-ball__c-cap::after{ right:39%; transform:rotate(-20deg); }
+
+/* per-type accent on the open lid (Ultra black cap; other tiers read by colour) */
+.rt-ball__lid-cap{ display:none; position:absolute; left:6%; right:6%; top:0; height:46%; pointer-events:none; }
+.rt-ball--ultra .rt-ball__lid-cap{ display:block; background:#2A2F36; border-radius:50% 50% 30% 30% / 88% 88% 34% 34%; }
 
 /* ---------- 3D opening sphere ---------- */
 .rt-ball__sphere{
@@ -254,11 +275,11 @@ a{ color:inherit; }
 }
 .rt-ball__lid::before{ /* dome outer (top of the lid) */
   content:""; position:absolute; inset:0; border-radius:50% 50% 46% 46% / 66% 66% 34% 34%;
-  background:linear-gradient(180deg,#F0605F 0%, #C43C3B 100%); box-shadow:0 5px 9px -4px rgba(12,39,64,.45);
+  background:linear-gradient(180deg,var(--bt2) 0%, var(--bt) 100%); box-shadow:0 5px 9px -4px rgba(12,39,64,.45);
 }
 .rt-ball__lid::after{ /* concave underside of the lid, facing the bowl */
   content:""; position:absolute; left:16%; right:16%; bottom:2%; height:52%; border-radius:50%;
-  background:radial-gradient(ellipse at 50% 24%, #C34440 0%, #8f2f2a 82%); box-shadow:inset 0 4px 7px rgba(0,0,0,.32);
+  background:radial-gradient(ellipse at 50% 24%, var(--bt) 0%, var(--btd) 82%); box-shadow:inset 0 4px 7px rgba(0,0,0,.32);
 }
 /* white base seen at an angle — a shallow bowl */
 .rt-ball__bowl{
@@ -279,7 +300,7 @@ a{ color:inherit; }
 .rt-ball__rim{
   position:absolute; left:10%; right:10%; top:22%; height:38%; z-index:6;
   opacity:var(--o,0); transition:opacity .4s ease; border-radius:50%;
-  border:4px solid #E24B4A; box-shadow:0 2px 3px -1px rgba(12,39,64,.35);
+  border:4px solid var(--bacc); box-shadow:0 2px 3px -1px rgba(12,39,64,.35);
 }
 /* bright light pooling at / rising from the opening */
 .rt-ball__core{
@@ -305,7 +326,7 @@ a{ color:inherit; }
 /* ---------- CLOSED front-facing halves (fade out with --o) ---------- */
 .rt-ball__c-top{
   position:absolute; z-index:10; left:0; top:0; width:100%; height:50%; border-radius:999px 999px 6px 6px;
-  background:linear-gradient(160deg,#F0827F 0%, #E24B4A 62%); box-shadow:inset 0 2px 6px rgba(255,255,255,.45);
+  background:linear-gradient(160deg,var(--bt2) 0%, var(--bt) 62%); box-shadow:inset 0 2px 6px rgba(255,255,255,.45);
   opacity:calc(1 - var(--o,0)); transition:opacity .25s ease;
 }
 .rt-ball__c-bottom{
@@ -313,9 +334,9 @@ a{ color:inherit; }
   background:linear-gradient(20deg,#EDE8DE 0%, #FDFDFB 60%); box-shadow:inset 0 -3px 6px rgba(0,0,0,.05);
   opacity:calc(1 - var(--o,0)); transition:opacity .25s ease;
 }
-.rt-ball__band{ position:absolute; z-index:11; left:0; top:calc(50% - 5%); width:100%; height:10%; background:#2A2F36; border-radius:2px; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
-.rt-ball__btn{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; background:#FDFDFB; border:3px solid #2A2F36; box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
-.rt-ball__pulse{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; border:2px solid #E24B4A; box-sizing:border-box; opacity:calc(1 - var(--o,0)); animation:pulse 2.8s ease-out infinite; }
+.rt-ball__band{ position:absolute; z-index:11; left:0; top:calc(50% - 5%); width:100%; height:10%; background:var(--bd); border-radius:2px; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__btn{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; background:#FDFDFB; border:3px solid var(--bring); box-sizing:border-box; opacity:calc(1 - var(--o,0)); transition:opacity .2s linear; }
+.rt-ball__pulse{ position:absolute; z-index:12; left:50%; top:50%; width:30%; height:30%; margin:-15% 0 0 -15%; border-radius:50%; border:2px solid var(--bacc); box-sizing:border-box; opacity:calc(1 - var(--o,0)); animation:pulse 2.8s ease-out infinite; }
 
 /* card — folds out on the side OPPOSITE the ball */
 .rt-card{
