@@ -7,6 +7,8 @@ import { RESUME_URL, GITHUB_URL, EMAIL } from './site';
 export const biomes = [
   {
     id: 'city',
+    type: 'poke',
+    ballName: 'Poké Ball',
     scenery: 'city',
     label: 'City · Where it started',
     labelColor: '#35506A',
@@ -29,6 +31,8 @@ export const biomes = [
   },
   {
     id: 'jungle',
+    type: 'ultra',
+    ballName: 'Ultra Ball',
     scenery: 'jungle',
     label: 'Jungle · The big build',
     labelColor: '#2F5A3C',
@@ -51,6 +55,8 @@ export const biomes = [
   },
   {
     id: 'desert',
+    type: 'great',
+    ballName: 'Great Ball',
     scenery: 'desert',
     label: 'Desert · What I debug',
     labelColor: '#7A4A17',
@@ -73,6 +79,8 @@ export const biomes = [
   },
   {
     id: 'sea',
+    type: 'premier',
+    ballName: 'Premier Ball',
     scenery: 'sea',
     label: 'Sea · Say hi',
     labelColor: '#0F4F52',
